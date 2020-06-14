@@ -37,7 +37,7 @@ class Movie extends Component {
             }
         };
         this.handleUpdate = this.handleUpdate.bind(this);
-        this.postRev = this.postRev.bind(this);
+        this.postReview = this.postReview.bind(this);
     }
 
     handleUpdate(event){
