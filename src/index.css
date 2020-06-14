@@ -1,0 +1,55 @@
+body {
+  margin: 0;
+  padding: 0;
+  font-family: sans-serif;
+  background-color : green;
+}
+
+.navbar.navbar-default {
+  background-color: green;
+  color: black;
+}
+
+.nav.navbar-nav li a {
+  color: black;
+}
+
+.navbar-brand {
+  color: black;
+}
+
+.navbar-brand span {
+  color: black
+}
+
+.navbar-header span {
+  color : black;
+}
+
+.nav.navbar-nav.navbar-right li a {
+  color: blue;
+}
+
+.navbar-text {
+  color: black;
+}
+
+.span.navbar-brand {
+  color: black;
+}
+
+.container.a {
+  color : black;
+}
+
+a {
+  color : black;
+}
+
+NavItem {
+  color : black;
+}
+
+.navbar-default,.navbar-nav>li>a {
+  color: black;
+}
