@@ -132,7 +132,7 @@ class Movie extends Component {
                         </Col>
                         <Col sm={10}>
                             <FormControl autoFocus onChange={this.handleUpdate} value={this.state.review.review_quote} type="text" placeholder="Review:" />
-                            <Button onClick={this.postRev}> Submit Review </Button>
+                            <Button onClick={this.postReview}> Submit Review </Button>
                         </Col>
                     </FormGroup>
 
