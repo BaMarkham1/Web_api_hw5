@@ -1,4 +1,4 @@
-
+import StarRatings from 'react-star-ratings';
 import React, { Component }  from 'react';
 import {connect} from "react-redux";
 import {
@@ -30,35 +30,38 @@ class Movie extends Component {
         this.state = {
             review: {
                 name: localStorage.getItem('username'),
-                review_quote: '',
+                quote: '',
                 rating: 0,
                 movie_id: 0
                 //movie_id: this.props.selectedMovie._id,
             }
         };
         this.handleUpdate = this.handleUpdate.bind(this);
-        this.postReview = this.postReview.bind(this);
+        //this.postReview = this.postReview.bind(this);
     }
 
+
     handleUpdate(event){
+        event.preventDefault();
+        console.log("event target:");
+        console.log(event.target);
         let updateDetails = Object.assign({}, this.state.review);
-        if(event.target.id === "rating"){
-            updateDetails[event.target.id] = parseInt(event.target.value);
-        }
-        else {
-            updateDetails[event.target.id] = event.target.value;
-        }
+        updateDetails.quote = event.target.value;
         this.setState({
             review: updateDetails
         });
+
+        console.log("review:")
         console.log(this.state.review);
     }
 
+    /*
     postReview(){
         const {dispatch} = this.props;
-        this.state.review = this.props.movieId
+        this.state.review.movie_id = this.props.movieId;
         dispatch(postNewReview(this.state.review));
     }
+     */
 
     componentDidMount() {
         console.log("component did mount");
@@ -79,6 +82,29 @@ class Movie extends Component {
             )
         };
 
+        const ReviewForm = () => {
+            return (
+                <div>
+                    <form className="field">
+                        <h3>
+                            Post a review for this movie
+                        </h3>
+                        <label
+                            className="label">Review
+                        </label>
+                        <div className="control">
+                            <textarea className="textarea"
+                                      type="text"
+                                      name="quote"
+                                      value={this.state.review.quote}
+                                      onChange={this.handleUpdate}
+                            />
+                        </div>
+                    </form>
+                </div>
+            )
+        }
+
         const ReviewInfo = ({reviews}) => {
             return reviews.map((review, i) =>
                 <p key={i}>
@@ -95,7 +121,7 @@ class Movie extends Component {
             console.log("currentMovie:")
             console.log(currentMovie)
             return (
-              <Panel>
+              <Panel className="panel" key={345}>
                   <Panel.Heading>Movie Detail</Panel.Heading>
                   <Panel.Body><Image className="image" src={currentMovie.image_url} thumbnail width="330" height="400"/></Panel.Body>
                   <ListGroup>
@@ -104,41 +130,28 @@ class Movie extends Component {
                       <ListGroupItem><h4><Glyphicon glyph={'star'}/> {currentMovie.avg_rating} </h4></ListGroupItem>
                   </ListGroup>
                   <Panel.Body><ReviewInfo reviews={currentMovie.reviews} /></Panel.Body>
-                  <Panel.Body><ReviewField /></Panel.Body>
+                  <div>
+                      <form className="field">
+                          <h3>
+                              Post a review for this movie
+                          </h3>
+                          <label
+                              className="label">Review
+                          </label>
+                          <div className="control">
+                            <textarea className="textarea"
+                                      key={123}
+                                      type="text"
+                                      name="quote"
+                                      value={this.state.review.quote}
+                                      onChange={this.handleUpdate}
+                            />
+                          </div>
+                      </form>
+                  </div>
               </Panel>
             );
         };
-
-        const ReviewField = ({reviews}) =>{
-            return(
-                <Form horizontal>
-                    <FormGroup controlId="rating">
-                        <Col componentClass={ControlLabel} sm={2}>
-                            Rating:
-                        </Col>
-                        <Col sm={10}>
-                            <FormControl onChange={this.handleUpdate} value={this.state.review.rating} componentClass="select">
-                                <option>1</option>
-                                <option>2</option>
-                                <option>3</option>
-                                <option>4</option>
-                                <option>5</option>
-                            </FormControl>
-                        </Col>
-                    </FormGroup>
-                    <FormGroup controlId="review_quote">
-                        <Col componentClass={ControlLabel} sm={2}>
-                            Review:
-                        </Col>
-                        <Col sm={10}>
-                            <FormControl autoFocus onChange={this.handleUpdate} value={this.state.review.review_quote} type="text" placeholder="Review:" />
-                            <Button onClick={this.postReview}> Submit Review </Button>
-                        </Col>
-                    </FormGroup>
-
-                </Form>
-            )
-        }
 
         return (
             <DetailInfo currentMovie={this.props.selectedMovie} />
@@ -146,9 +159,160 @@ class Movie extends Component {
     }
 }
 
+/*
+class ReviewForm extends Component {
+    constructor(props) {
+        super(props);
+        console.log("props:")
+        console.log(props)
+        //this.handleChange = this.handleChange.bind(this);
+    }
+
+
+    render() {
+        console.log("quote:");
+        console.log(this.props.quote);
+        return (
+            <div>
+                <form class="field">
+                    <h3>
+                        Post a review for this movie
+                    </h3>
+                    <label
+                        className="label">Review
+                    </label>
+                    <div className="control">
+                        <textarea className="textarea" type="text" name="quote" value={this.props.quote} onChange={this.props.onChange}/>
+                    </div>
+                </form>
+            </div>
+        )
+    }
+}
+
+
+
+class ReviewForm extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            quote: "",
+            rating: 0,
+            movie_id : props.movie_id,
+            movie_title :  props.movie_title,
+            name : props.username
+        };
+        console.log("props in reviewForm:")
+        console.log(props)
+        this.handleChange = this.handleChange.bind(this);
+        this.handleSubmit = this.handleSubmit.bind(this);
+        this.changeRating = this.changeRating.bind(this);
+        this.postReview = this.postReview.bind(this);
+    }
+
+    postReview(){
+        const {dispatch} = this.state;
+        //this.state.review.movie_id = this.props.movieId;
+        dispatch(postNewReview(this.state));
+    }
+
+    handleChange(event) {
+        const target = event.target;
+        const value = target.type === "checkbox" ? target.checked : target.value;
+        const name = target.name;
+
+        this.setState({
+            [name]: value
+        });
+    }
+
+    changeRating( newRating, name ) {
+        this.setState({
+            rating: newRating
+        });
+    }
+
+    handleSubmit(event) {
+        event.preventDefault();
+        this.postReview();
+        console.log("form submitted. State:");
+        console.log(this.state);
+    }
+
+    render() {
+        const StarRater = () => {
+            return(
+                <div>
+                    <StarRatings
+                        rating={this.state.rating}
+                        starRatedColor="blue"
+                        changeRating={this.changeRating}
+                        name='rating'
+                    />
+                </div>
+            )
+        };
+
+        return (
+            <div className="field">
+                <form onSubmit={this.handleSubmit}>
+                    <h3>Post a review for {this.state.movie_title}</h3>
+                    <label
+                        className="Label">Rating
+                    </label>
+                    <div className="control">
+                        <StarRater/>
+                    </div>
+                    <label
+                        className="label">Review
+                    </label>
+                    <div className="control">
+                        <textarea className="textarea" type="text" name="quote" value={this.state.quote} onChange={this.handleChange}/>
+                    </div>
+                    <button>
+                        Submit Review
+                    </button>
+                </form>
+            </div>
+        );
+    }
+}
+
+/*
+class StarRater extends Component {
+
+    constructor(props) {
+        super(props);
+        this.state = {
+            rating: 0
+        };
+        this.changeRating = this.changeRating.bind(this);
+    }
+
+    changeRating( newRating, name ) {
+        this.setState({
+            rating: newRating
+        });
+    }
+
+    render() {
+        // rating = 2;
+        return (
+            <StarRatings
+                rating={this.state.rating}
+                starRatedColor="blue"
+                changeRating={this.changeRating}
+                name='rating'
+            />
+        );
+    }
+}
+*/
+
 const mapStateToProps = (state, ownProps) => {
+    console.log("map state to props called");
     console.log("state");
-    console.log(state)
+    console.log(state);
     console.log("ownProps");
     console.log(ownProps);
     return {

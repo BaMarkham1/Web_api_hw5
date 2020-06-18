@@ -81,9 +81,11 @@ export function fetchMovie(movieId){
 }
 
 export function postNewReview(newReview){
+    console.log("review:");
+    console.log(JSON.stringify(newReview));
     const env = runtimeEnv();
     return dispatch => {
-        return fetch(`${env.REACT_APP_API_URL}/review/`, {
+        return fetch(`${env.REACT_APP_API_URL}/reviews/`, {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
@@ -101,9 +103,8 @@ export function postNewReview(newReview){
                 console.log(response.json);
                 return response.json;
             })
-            // .then( (res) => {
-            //     dispatch(movieFetched(res));
-            // })
-            .catch( (e) => console.log(e) );
+            .catch( (e) => {
+                console.log(e)
+            })
     }
 }
