@@ -34,12 +34,48 @@ class Movie extends Component {
                 rating: 0,
                 movie_id: 0
                 //movie_id: this.props.selectedMovie._id,
-            }
+            },
+            reviewed: false
         };
         this.handleUpdate = this.handleUpdate.bind(this);
-        //this.postReview = this.postReview.bind(this);
+        this.postReview = this.postReview.bind(this);
+        this.changeRating = this.changeRating.bind(this);
     }
 
+    changeRating( newRating, name ) {
+        let updateDetails = Object.assign({}, this.state.review);
+        updateDetails.rating = newRating;
+        this.setState({
+            review:updateDetails
+        });
+    }
+
+    handleUpdate(event){
+        console.log("event target:");
+        console.log(event.target);
+        console.log("event target id:");
+        console.log(event.target.id);
+        console.log("event target value:");
+        console.log(event.target.value);
+        let updateDetails = Object.assign({}, this.state.review);
+        if(event.target.id === "rating"){
+            updateDetails[event.target.id] = parseInt(event.target.value);
+        }
+        else {
+            updateDetails[event.target.id] = event.target.value;
+            console.log("update details object 1");
+            console.log(updateDetails);
+        }
+        this.setState({
+            review: updateDetails
+        });
+        console.log("Review");
+        console.log(this.state.review);
+        console.log("update details object 2");
+        console.log(updateDetails);
+    }
+
+    /*
 
     handleUpdate(event){
         event.preventDefault();
@@ -47,6 +83,7 @@ class Movie extends Component {
         console.log(event.target);
         let updateDetails = Object.assign({}, this.state.review);
         updateDetails.quote = event.target.value;
+        //updateDetails[event.target.id] = event.target.value;
         this.setState({
             review: updateDetails
         });
@@ -55,13 +92,28 @@ class Movie extends Component {
         console.log(this.state.review);
     }
 
-    /*
+     */
+
+
     postReview(){
+        console.log("props");
+        console.log(this.props);
+        console.log("state");
+        console.log(this.state)
         const {dispatch} = this.props;
         this.state.review.movie_id = this.props.movieId;
         dispatch(postNewReview(this.state.review));
+        //this.forceUpdate();
+        this.setState({ state: this.state });
+        this.setState({reviewed: true});
+        dispatch(fetchMovie(this.props.movieId));
+        let reviewArray = this.props.selectedMovie.reviews;
+        let newReview = {name : this.state.review.name, quote : this.state.review.quote, rating : this.state.review.rating}
+        reviewArray.unshift(newReview);
+        this.setState({
+            reviews: reviewArray
+        });
     }
-     */
 
     componentDidMount() {
         console.log("component did mount");
@@ -73,6 +125,36 @@ class Movie extends Component {
         }
     }
 
+
+
+    ReviewForm = () => {
+
+        return (
+            <div>
+                <form className="field">
+                    <h3>
+                        Post a review for this movie
+                    </h3>
+                    <label
+                        className="label">Review
+                    </label>
+                    <div className="control">
+                            <textarea className="textarea"
+                                      type="text"
+                                      name="quote"
+                                      value={this.state.review.quote}
+                                      onChange={this.handleUpdate}
+                                      id="quote"
+                                      key="review_text_area"
+                            />
+                    </div>
+                </form>
+            </div>
+        )
+    }
+
+
+
     render() {
         const ActorInfo = ({actors}) => {
             return actors.map((actor, i) =>
@@ -82,35 +164,62 @@ class Movie extends Component {
             )
         };
 
-        const ReviewForm = () => {
-            return (
-                <div>
-                    <form className="field">
-                        <h3>
-                            Post a review for this movie
-                        </h3>
-                        <label
-                            className="label">Review
-                        </label>
-                        <div className="control">
-                            <textarea className="textarea"
-                                      type="text"
-                                      name="quote"
-                                      value={this.state.review.quote}
-                                      onChange={this.handleUpdate}
-                            />
-                        </div>
-                    </form>
-                </div>
+        const ReviewField = (props) =>{
+            console.log(props.title)
+            console.log()
+            return(
+                <Form horizontal>
+                    <h3>
+                        <b>
+                            Submit a Review for {props.title}
+                        </b>
+                    </h3>
+                    <FormGroup controlId="rating">
+                        <StarRatings
+                            rating={this.state.review.rating}
+                            starRatedColor="blue"
+                            changeRating={this.changeRating}
+                            name='rating'
+                        />
+                    </FormGroup>
+                    <FormGroup controlId="quote">
+                            <FormControl  type="review" onChange={this.handleUpdate} value={this.state.review.quote} placeholder="Write a review" />
+                            <Button onClick={this.postReview}> Submit Review </Button>
+                    </FormGroup>
+                </Form>
             )
         }
 
+        const StarRater = () => {
+            return (
+                <StarRatings
+                    rating={this.state.rating}
+                    starRatedColor="blue"
+                    changeRating={this.changeRating}
+                    name='rating'
+                />
+            );
+        };
+
         const ReviewInfo = ({reviews}) => {
-            return reviews.map((review, i) =>
-                <p key={i}>
-                    <b>{review.name}</b> {review.quote}
-                    <Glyphicon glyph={'star'} /> {review.rating}
-                </p>
+            return (
+                reviews.map((review, i) =>
+                <div>
+                    <p>
+                        <h4><b>{review.name}</b></h4>
+                        <StarRatings
+                            rating={review.rating}
+                            starDimension="20px"
+                            starSpacing="0px"
+                            starRatedColor="blue"
+                        />
+                    </p>
+                    <p key={i}>
+                        {"\""+ review.quote +  "\""}
+                    </p>
+                    <br></br>
+                </div>
+                )
             )
         };
 
@@ -122,33 +231,51 @@ class Movie extends Component {
             console.log(currentMovie)
             return (
               <Panel className="panel" key={345}>
-                  <Panel.Heading>Movie Detail</Panel.Heading>
+                  <Panel.Heading>
+                      <h1>
+                          <b>
+                            {currentMovie.title}
+                          </b>
+                          {" (" + currentMovie.year + ")"}
+                      </h1>
+                      {currentMovie.genre}
+                  </Panel.Heading>
                   <Panel.Body><Image className="image" src={currentMovie.image_url} thumbnail width="330" height="400"/></Panel.Body>
                   <ListGroup>
-                      <ListGroupItem>{currentMovie.title}</ListGroupItem>
-                      <ListGroupItem><ActorInfo actors={currentMovie.actors} />  </ListGroupItem>
-                      <ListGroupItem><h4><Glyphicon glyph={'star'}/> {currentMovie.avg_rating} </h4></ListGroupItem>
-                  </ListGroup>
-                  <Panel.Body><ReviewInfo reviews={currentMovie.reviews} /></Panel.Body>
-                  <div>
-                      <form className="field">
+                      <ListGroupItem>
+                          <button>Edit movie details</button>
+                      </ListGroupItem>
+                      <ListGroupItem>
                           <h3>
-                              Post a review for this movie
+                              <b>
+                                  {currentMovie.title} roles:
+                              </b>
                           </h3>
-                          <label
-                              className="label">Review
-                          </label>
-                          <div className="control">
-                            <textarea className="textarea"
-                                      key={123}
-                                      type="text"
-                                      name="quote"
-                                      value={this.state.review.quote}
-                                      onChange={this.handleUpdate}
-                            />
-                          </div>
-                      </form>
-                  </div>
+                          <ActorInfo
+                              actors={currentMovie.actors}
+                          />
+                      </ListGroupItem>
+                      <ListGroupItem>
+                          <h3>
+                              <b>Community Rating: {currentMovie.avg_rating}</b>
+                          </h3>
+                          <StarRatings
+                              rating={currentMovie.avg_rating}
+                              starRatedColor="blue"
+                          />
+                      </ListGroupItem>
+                  </ListGroup>
+                  <Panel.Body>{this.state.reviewed ? <h4>Thank you for your submission!</h4> : <ReviewField title={currentMovie.title} />}</Panel.Body>
+                  <Panel.Body>
+                      <h3>
+                          <b>
+                              {currentMovie.title} reviews:
+                          </b>
+                      </h3>
+                      <ReviewInfo
+                          reviews={currentMovie.reviews}
+                      />
+                  </Panel.Body>
               </Panel>
             );
         };
@@ -159,7 +286,7 @@ class Movie extends Component {
     }
 }
 
-/*
+
 class ReviewForm extends Component {
     constructor(props) {
         super(props);
@@ -190,7 +317,7 @@ class ReviewForm extends Component {
     }
 }
 
-
+/*
 
 class ReviewForm extends Component {
     constructor(props) {
