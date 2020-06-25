@@ -2,7 +2,6 @@ body {
   margin: 0;
   padding: 0;
   font-family: sans-serif;
-  background-color : green;
 }
 
 .navbar.navbar-default {
@@ -53,5 +52,3 @@ NavItem {
 .navbar-default,.navbar-nav>li>a {
   color: black;
 }
-
-

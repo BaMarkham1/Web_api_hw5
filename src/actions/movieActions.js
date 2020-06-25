@@ -108,3 +108,30 @@ export function postNewReview(newReview){
             })
     }
 }
+
+export function newPutMovie(movieDetails){
+    const env = runtimeEnv();
+    return dispatch => {
+        return fetch(`${env.REACT_APP_API_URL}/movies/`, {
+            method: 'PUT',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Authorization': localStorage.getItem('token')
+            },
+            body: JSON.stringify(movieDetails),
+            mode: 'cors'})
+            .then( (response) => {
+                console.log(response);
+                if (!response.ok) {
+                    throw Error(response.statusText);
+                }
+                console.log("response:")
+                console.log(response.json);
+                return response.json;
+            })
+            .catch( (e) => {
+                console.log(e)
+        })
+    }
+}
