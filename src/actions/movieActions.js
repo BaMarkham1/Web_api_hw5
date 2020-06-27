@@ -8,12 +8,37 @@ function moviesFetched(movies) {
     }
 }
 
+function actorsFetched(actors) {
+    return {
+        type: actionTypes.FETCH_ACTORS,
+        actors: actors
+    }
+}
+
 function movieFetched(movie) {
-    console.log("movie in movieFetched")
+    console.log("in movieFetched")
     console.log(movie)
     return {
         type: actionTypes.FETCH_MOVIE,
         selectedMovie: movie
+    }
+}
+
+function reviewsFetched(reviews) {
+    console.log("in reviews fetched");
+    console.log(reviews);
+    return {
+        type: actionTypes.FETCH_REVIEWS,
+        reviews: reviews
+    }
+}
+
+function movieRolesFetched(movieRoles) {
+    console.log("in movieRolesFetched")
+    console.log(movieRoles)
+    return {
+        type: actionTypes.FETCH_MOVIE_ROLES,
+        movieRoles: movieRoles
     }
 }
 
@@ -27,6 +52,19 @@ function movieSet(movie) {
 export function setMovie(movie) {
     return dispatch => {
         dispatch(movieSet(movie))
+    }
+}
+
+function actorSet(actor) {
+    return {
+        type: actionTypes.SET_ACTOR,
+        selectedActor: actor
+    }
+}
+
+export function setActor(actor) {
+    return dispatch => {
+        dispatch(actorSet(actor))
     }
 }
 
@@ -55,9 +93,34 @@ export function fetchMovies() {
     }
 }
 
+export function fetchActors() {
+    const env = runtimeEnv();
+    return dispatch => {
+        console.log("in fetch movies");
+        return fetch(`${env.REACT_APP_API_URL}/actors`, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Authorization': localStorage.getItem('token')
+            },
+            mode: 'cors'})
+            .then( (response) => {
+                if (!response.ok) {
+                    throw Error(response.statusText);
+                }
+                return response.json();
+            })
+            .then( (res) => {
+                dispatch(actorsFetched(res.actors));
+            })
+            .catch( (e) => console.log(e) );
+    }
+}
+
 export function fetchMovie(movieId){
     const env = runtimeEnv();
-    console.log("in fetchMovie")
+    console.log("in fetchMovie");
     return dispatch => {
         return fetch(`${env.REACT_APP_API_URL}/movies/${movieId}?reviews=true`, {
             method: 'GET',
@@ -75,6 +138,56 @@ export function fetchMovie(movieId){
             })
             .then( (res) => {
                 dispatch(movieFetched(res.movie));
+            })
+            .catch( (e) => console.log(e) );
+    }
+}
+
+export function fetchReviews(movieId){
+    const env = runtimeEnv();
+    console.log("in fetch review");
+    return dispatch => {
+        return fetch(`${env.REACT_APP_API_URL}/reviews/${movieId}`, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Authorization': localStorage.getItem('token')
+            },
+            mode: 'cors'})
+            .then( (response) => {
+                if (!response.ok) {
+                    throw Error(response.statusText);
+                }
+                return response.json();
+            })
+            .then( (res) => {
+                dispatch(reviewsFetched(res.reviews));
+            })
+            .catch( (e) => console.log(e) );
+    }
+}
+
+export function fetchMovieRoles(movieId){
+    const env = runtimeEnv();
+    console.log("in fetch review");
+    return dispatch => {
+        return fetch(`${env.REACT_APP_API_URL}/roles/movie/${movieId}`, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Authorization': localStorage.getItem('token')
+            },
+            mode: 'cors'})
+            .then( (response) => {
+                if (!response.ok) {
+                    throw Error(response.statusText);
+                }
+                return response.json();
+            })
+            .then( (res) => {
+                dispatch(movieRolesFetched(res.movieRoles));
             })
             .catch( (e) => console.log(e) );
     }

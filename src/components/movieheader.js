@@ -30,6 +30,9 @@ class MovieHeader extends Component {
                         <LinkContainer to="/signin">
                             <NavItem eventKey={3}>{this.props.loggedIn ? <button onClick={this.logout.bind(this)}>Logout</button> : 'Login'}</NavItem>
                         </LinkContainer>
+                        <LinkContainer to={'/actorlist'}>
+                            <NavItem eventKey={4} disabled={!this.props.loggedIn}>Actor List</NavItem>
+                        </LinkContainer>
                     </Nav>
                 </Navbar>
                 <header className="App-header">
