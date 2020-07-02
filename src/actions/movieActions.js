@@ -34,12 +34,18 @@ function reviewsFetched(reviews) {
 }
 
 function movieRolesFetched(movieRoles) {
-    console.log("in movieRolesFetched")
-    console.log(movieRoles)
+    console.log("in movieRolesFetched");
+    console.log(movieRoles);
     return {
         type: actionTypes.FETCH_MOVIE_ROLES,
         movieRoles: movieRoles
     }
+}
+
+function newRolePosted(newRole) {
+    console.log("in newRolePosted");
+    console.log(newRole);
+
 }
 
 function movieSet(movie) {
@@ -222,6 +228,40 @@ export function postNewReview(newReview){
     }
 }
 
+export function postRole(newRole, movieId){
+    console.log("role:");
+    console.log(JSON.stringify(newRole));
+    const env = runtimeEnv();
+    return dispatch => {
+        return fetch(`${env.REACT_APP_API_URL}/role/`,{
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Authorization': localStorage.getItem('token')
+            },
+            body: JSON.stringify(newRole),
+            mode: 'cors'})
+            .then( (response) => {
+                console.log(response);
+                if (!response.ok) {
+                    throw Error(response.statusText);
+                }
+                console.log("response:");
+                console.log(response);
+                if (response.status == 200) {
+                    console.log("status was 200");
+                    dispatch(fetchMovieRoles(movieId));
+                }
+                return response;
+
+            })
+            .catch( (e) => {
+                console.log(e)
+            })
+    }
+}
+
 export function newPutMovie(movieDetails){
     const env = runtimeEnv();
     return dispatch => {
@@ -241,6 +281,10 @@ export function newPutMovie(movieDetails){
                 }
                 console.log("response:")
                 console.log(response.json);
+                if (response.status == 200) {
+                    console.log("status was 200");
+                    dispatch(fetchMovie(movieDetails.movie_id));
+                }
                 return response.json;
             })
             .catch( (e) => {
