@@ -288,7 +288,8 @@ class Movie extends Component {
             title: this.props.selectedMovie.title,
             year: this.props.selectedMovie.year,
             image_url: this.props.selectedMovie.image_url,
-            genre: this.props.selectedMovie.genre
+            genre: this.props.selectedMovie.genre,
+            trailer_url: this.props.selectedMovie.trailer_url
         }
         this.setState({
             movieDetails: movieDetails
@@ -379,7 +380,7 @@ class Movie extends Component {
         console.log("put movie called");
         console.log("movie details:");
         console.log(this.state.movieDetails);
-        this.setState({changesSubmitted: true})
+        this.setState({userState: userStates.NO_STATE});
         const {dispatch} = this.props;
         dispatch(newPutMovie(this.state.movieDetails));
     }
@@ -539,22 +540,7 @@ class Movie extends Component {
                                 : <p>...loading roles</p>
                         }
                     </ListGroupItem>
-                    {/*
-                      <ListGroupItem>
-                            <Panel.Body>
-                                <h3>
-                                    <b>
-                                        {this.props.selectedMovie ? "Watch trailer for " + this.props.selectedMovie.title : "Watch trailer"}
-                                    </b>
-                                </h3>
-                                <ReactPlayer
-                                    url="https://www.youtube.com/watch?v=lAxgztbYDbs"
-                                />
-                            </Panel.Body>
-                        </ListGroupItem>
-                    */}
-                </ListGroup>
-                <ListGroup>
+                    <TrailerDisplay selectedMovie={this.props.selectedMovie} />
                 </ListGroup>
                 <Panel.Body>
                     <ButtonToolbar>
@@ -575,6 +561,40 @@ class Movie extends Component {
         )
     }
 
+}
+
+class TrailerDisplay extends Component {
+    constructor(props) {
+        super(props);
+        console.log("RoleForm props:");
+        console.log(props);
+        console.log("roles array");
+        console.log(props.rolesArray);
+    }
+
+    render(){
+        if (this.props.selectedMovie && this.props.selectedMovie.trailer_url) {
+            return (
+                <ListGroupItem>
+                    <Panel.Body>
+                        <h3>
+                            <b>
+                                {"Watch trailer for " + this.props.selectedMovie.title}
+                            </b>
+                        </h3>
+                        <ReactPlayer
+                            url={this.props.selectedMovie.trailer_url}
+                        />
+                    </Panel.Body>
+                </ListGroupItem>
+            )
+        }
+        else {
+            return (
+                <p>No trailer available</p>
+            )
+        }
+    }
 }
 
 const ReviewInfo = ({reviews}) => {
@@ -817,10 +837,18 @@ class MovieEditForm extends Component {
                                 </Col>
                             </FormGroup>
                             <FormGroup controlId="image_url">
-                                <Col componentClass={ControlLabel} sm={2} >Image:</Col>
+                                <Col componentClass={ControlLabel} sm={2} >Cover image:</Col>
                                 <Col sm={10} >
                                     <FormControl
                                         onChange={this.props.updateDetails} value={this.props.movie.image_url} type="text"
+                                    />
+                                </Col>
+                            </FormGroup>
+                            <FormGroup controlId="trailer_url">
+                                <Col componentClass={ControlLabel} sm={2} >Trailer video:</Col>
+                                <Col sm={10} >
+                                    <FormControl
+                                        onChange={this.props.updateDetails} value={this.props.movie.trailer_url} type="text"
                                     />
                                 </Col>
                             </FormGroup>
