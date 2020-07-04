@@ -16,8 +16,8 @@ function actorsFetched(actors) {
 }
 
 function movieFetched(movie) {
-    console.log("in movieFetched")
-    console.log(movie)
+    console.log("in movieFetched");
+    console.log(movie);
     return {
         type: actionTypes.FETCH_MOVIE,
         selectedMovie: movie
@@ -40,12 +40,6 @@ function movieRolesFetched(movieRoles) {
         type: actionTypes.FETCH_MOVIE_ROLES,
         movieRoles: movieRoles
     }
-}
-
-function newRolePosted(newRole) {
-    console.log("in newRolePosted");
-    console.log(newRole);
-
 }
 
 function movieSet(movie) {
@@ -223,6 +217,41 @@ export function postNewReview(newReview){
                 return response.json;
             })
             .catch( (e) => {
+                console.log(e)
+            })
+    }
+}
+
+export function putRole(editedRole) {
+    console.log("edited role:");
+    console.log(editedRole);
+    const env = runtimeEnv();
+    return dispatch => {
+        return fetch(`${env.REACT_APP_API_URL}/role/`, {
+            method: 'PUT',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Authorization': localStorage.getItem('token')
+            },
+            body: JSON.stringify(editedRole),
+            mode: 'cors'
+        })
+            .then((response) => {
+                console.log(response);
+                if (!response.ok) {
+                    throw Error(response.statusText);
+                }
+                console.log("response:");
+                console.log(response);
+                if (response.status == 200) {
+                    console.log("status was 200");
+                    dispatch(fetchMovieRoles(editedRole.movie_id));
+                }
+                return response;
+
+            })
+            .catch((e) => {
                 console.log(e)
             })
     }

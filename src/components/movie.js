@@ -17,9 +17,7 @@ import {
 } from 'react-bootstrap'
 import { Image } from 'react-bootstrap'
 import { withRouter } from "react-router-dom";
-import {fetchMovie, fetchReviews, fetchActors, postNewReview, newPutMovie, fetchMovieRoles, postRole} from "../actions/movieActions";
-import PanelBody from "react-bootstrap/lib/PanelBody";
-import {submitLogin} from "../actions/authActions";
+import {fetchMovie, fetchReviews, fetchActors, postNewReview, newPutMovie, fetchMovieRoles, postRole, putRole} from "../actions/movieActions";
 import ReactPlayer from "react-player"
 
 //support routing by creating a new component
@@ -75,11 +73,15 @@ class Movie extends Component {
         this.toggleSeeingReviews = this.toggleSeeingReviews.bind(this);
         this.addNewRole = this.addNewRole.bind(this);
         this.updateNewRoles = this.updateNewRoles.bind(this);
+        this.updateEditedRoles = this.updateEditedRoles.bind(this);
         this.updateSelectedActor = this.updateSelectedActor.bind(this);
+        this.updateSelectedActor2 = this.updateSelectedActor2.bind(this);
         this.submitNewRoles = this.submitNewRoles.bind(this);
         this.deleteRole = this.deleteRole.bind(this);
         this.buttonHandler = this.buttonHandler.bind(this);
+        this.submitEditedRoles = this.submitEditedRoles.bind(this);
     }
+
 
     buttonHandler(button) {
         switch (button.target.id) {
@@ -113,8 +115,21 @@ class Movie extends Component {
                 break;
             case 'edit_roles':
                 console.log("edit roles");
+                //do deep copy of array to avoid pointer issues
+                let editedRoles = [];
+                editedRoles = this.props.movieRoles.map( (role) => {
+                   let editedRole = {
+                       actor_id : role.actor_id,
+                       actor_name : role.actor_name,
+                       char_name : role.char_name,
+                       _id : role._id,
+                       img_url : role.img_url,
+                       movie_id : this.props.movieId
+                   };
+                   return editedRole;
+                });
                 this.setState({
-                   editedRoles : this.props.movieRoles
+                   editedRoles : editedRoles
                 });
                 this.setState({
                     userState: userStates.EDIT_ROLES
@@ -190,8 +205,11 @@ class Movie extends Component {
                 console.log(this.state.editedRoles);
                 return (
                   <EditRolesForm
-                      movieRoles={this.state.editedRoles}
+                      editedRoles={this.state.editedRoles}
                       actors={this.props.actors}
+                      updateEditedRoles={this.updateEditedRoles}
+                      submitEditedRoles ={this.submitEditedRoles}
+                      updateSelectedActor2 ={this.updateSelectedActor2}
                   />
                 );
             case 'no_state':
@@ -321,7 +339,20 @@ class Movie extends Component {
         this.setState({
             newRoles: []
         });
+    }
 
+    submitEditedRoles() {
+        console.log("props");
+        console.log(this.props);
+        console.log("state");
+        console.log(this.state);
+        this.setState({
+            userState : userStates.NO_STATE
+        });
+        const {dispatch} = this.props;
+        this.state.editedRoles.forEach( (role) => {
+            dispatch(putRole(role));
+        });
     }
 
     postReview() {
@@ -388,6 +419,24 @@ class Movie extends Component {
         });
     }
 
+    updateEditedRoles(event) {
+        console.log("event target value");
+        console.log(event.target.value);
+        console.log("event target id");
+        console.log(event.target.id);
+        console.log("array position");
+        console.log(event.target.id.substring(event.target.id.length - 1));
+        console.log("field");
+        console.log(event.target.id.substring(0, event.target.id.length - 1));
+        let index = parseInt(event.target.id.substring(event.target.id.length - 1));
+        let field = event.target.id.substring(0, event.target.id.length - 1);
+        let updatedArray = Object.assign([], this.state.editedRoles);
+        updatedArray[index][field] = event.target.value;
+        this.setState({
+            editedRoles: updatedArray
+        });
+    }
+
     updateSelectedActor(event) {
         console.log("in update selected actor:")
         console.log("event:");
@@ -407,13 +456,27 @@ class Movie extends Component {
             console.log("new roles:");
             console.log(this.state.newRoles);
         })
-        /*
-        let updateSelected = Object.assign([], this.state.selectValues);
-        updateSelected[event.target.id] = this.props.actors[event.target.value].name;
+    }
+
+    updateSelectedActor2(event) {
+        console.log("in update selected actor:")
+        console.log("event:");
+        console.log(event);
+        console.log("event target:");
+        console.log(event.target);
+        console.log("event target value");
+        console.log(event.target.value);
+        console.log("event target id");
+        console.log(event.target.id);
+        let updatedRoles = Object.assign([], this.state.editedRoles);
+        updatedRoles[event.target.id].actor_name = this.props.actors[event.target.value].name;
+        updatedRoles[event.target.id].actor_id = this.props.actors[event.target.value]._id;
         this.setState({
-            selectValues : updateSelected
+            editedRoles: updatedRoles
+        }, () => {
+            console.log("edited roles:");
+            console.log(this.state.editedRoles);
         })
-        */
     }
 
     render() {
@@ -476,16 +539,20 @@ class Movie extends Component {
                                 : <p>...loading roles</p>
                         }
                     </ListGroupItem>
-
+                    {/*
                       <ListGroupItem>
                             <Panel.Body>
-                                <h3>Watch Trailer:</h3>
+                                <h3>
+                                    <b>
+                                        {this.props.selectedMovie ? "Watch trailer for " + this.props.selectedMovie.title : "Watch trailer"}
+                                    </b>
+                                </h3>
                                 <ReactPlayer
                                     url="https://www.youtube.com/watch?v=lAxgztbYDbs"
                                 />
                             </Panel.Body>
                         </ListGroupItem>
-
+                    */}
                 </ListGroup>
                 <ListGroup>
                 </ListGroup>
@@ -495,7 +562,7 @@ class Movie extends Component {
                             <button id="see_reviews" onClick={this.buttonHandler}>See Reviews</button>
                             <button id="post_review" onClick={this.buttonHandler}>Post Review</button>
                             <button id="edit_movie" onClick={this.buttonHandler}>Edit Movie Details</button>
-                            <button id="add_roles" onClick={this.buttonHandler}>Add Role(s)</button>
+                            <button id="add_roles" onClick={this.buttonHandler}>Add Roles</button>
                             <button id="edit_roles" onClick={this.buttonHandler}>Edit Roles</button>
                         </ButtonGroup>
                     </ButtonToolbar>
@@ -618,8 +685,8 @@ class EditRolesForm extends Component {
 
     render() {
         console.log("movie roles:");
-        console.log(this.props.movieRoles);
-        if (!this.props.movieRoles) {
+        console.log(this.props.editedRoles);
+        if (!this.props.editedRoles) {
             return (
                 <p></p>
             );
@@ -629,26 +696,22 @@ class EditRolesForm extends Component {
                     <Panel.Body>
                         <h3>
                             <b>
-                                {this.props.movieRoles.length > 0 ? "Edit roles" : <p></p> }
+                                {this.props.editedRoles.length > 0 ? "Edit roles" : <p>There are no roles submited for this movie. Add some by pressing the "Add role(s)" button </p> }
                             </b>
                         </h3>
                         <Form horizonal>
                             {
-                                this.props.movieRoles.map((role, i) => {
+                                this.props.editedRoles.map((role, i) => {
                                     return (
                                         <div>
-                                            <FormGroup controlId={i}>
+                                            <FormGroup>
                                                 <Col componentClass={ControlLabel} sm={2}>
                                                     Actor Name:
                                                 </Col>
                                                 <Col sm={10}>
-                                                    <select className="form-control">
+                                                    <select id={i} className="form-control" onChange={this.props.updateSelectedActor2} >
                                                         {
                                                             this.props.actors.map( (actor, j)  => {
-                                                                //console.log("actor name:");
-                                                                //console.log(actor.name);
-                                                                //console.log("movie role");
-                                                                //console.log(role);
                                                                 if (role.actor_name === actor.name) {
                                                                     console.log("found a match");
                                                                     console.log("actor name:");
@@ -684,7 +747,8 @@ class EditRolesForm extends Component {
                                                     </Col>
                                                     <Col sm={10}>
                                                         <FormControl
-                                                            value={this.props.movieRoles[i].char_name} type="text"
+                                                            value={this.props.editedRoles[i].char_name} type="text"
+                                                            onChange={this.props.updateEditedRoles}
                                                         />
                                                     </Col>
                                                 </Row>
@@ -694,7 +758,7 @@ class EditRolesForm extends Component {
                                 })
                             }
                             <FormGroup>
-                                {this.props.movieRoles.length >0 ? <Button> Submit Roles </Button> : <p></p>}
+                                {this.props.editedRoles.length >0 ? <Button onClick={this.props.submitEditedRoles}> Submit Roles </Button> : <p></p>}
                             </FormGroup>
                         </Form>
                     </Panel.Body>
