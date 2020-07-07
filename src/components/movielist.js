@@ -2,10 +2,11 @@ import React, { Component } from 'react';
 import { fetchMovies } from '../actions/movieActions';
 import { setMovie } from '../actions/movieActions';
 import {connect} from "react-redux";
-import { Image } from 'react-bootstrap'
+import {Image, ListGroupItem} from 'react-bootstrap'
 import { Carousel } from 'react-bootstrap'
 import { Glyphicon } from 'react-bootstrap'
 import {LinkContainer} from 'react-router-bootstrap';
+import StarRatings from "react-star-ratings";
 
 class MovieList extends Component {
     constructor(props) {
@@ -48,7 +49,11 @@ class MovieList extends Component {
                                 </div>
                                 <Carousel.Caption>
                                     <h3>{movie.title}</h3>
-                                    <Glyphicon glyph={'star'} /> {movie.avg_rating} &nbsp;&nbsp; {movie.year}
+                                    <StarRatings
+                                        rating={movie.avg_rating}
+                                        starRatedColor="blue"
+                                    />
+                                    <h4>{movie.genre + " (" + movie.year + ")"}</h4>
                                 </Carousel.Caption>
                             </Carousel.Item>)}
                     </Carousel>

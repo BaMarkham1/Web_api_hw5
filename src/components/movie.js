@@ -7,18 +7,17 @@ import {
     ListGroupItem,
     ButtonGroup,
     ButtonToolbar,
-    FormGroup,
-    Col,
-    Row,
-    ControlLabel,
-    Form,
-    FormControl,
-    Button
 } from 'react-bootstrap'
 import { Image } from 'react-bootstrap'
 import { withRouter } from "react-router-dom";
 import {fetchMovie, fetchReviews, fetchActors, postNewReview, newPutMovie, fetchMovieRoles, postRole, putRole} from "../actions/movieActions";
 import ReactPlayer from "react-player"
+//internal components
+import MovieRoleScroller from "./MovieRoleScroller";
+import AddMovieRolesForm from "./AddMovieRolesForm";
+import EditMovieRolesForm from "./EditMovieRolesForm";
+import SubmitReviewForm from "./SubmitReviewForm";
+import MovieEditForm from "./MovieEditForm";
 
 //support routing by creating a new component
 
@@ -30,6 +29,7 @@ const userStates = {
     ADD_ROLES : "add_roles",
     EDIT_ROLES : "edit_roles"
 };
+
 
 class Movie extends Component {
 
@@ -80,6 +80,7 @@ class Movie extends Component {
         this.deleteRole = this.deleteRole.bind(this);
         this.buttonHandler = this.buttonHandler.bind(this);
         this.submitEditedRoles = this.submitEditedRoles.bind(this);
+        this.updateGenres = this.updateGenres.bind(this);
     }
 
 
@@ -165,7 +166,7 @@ class Movie extends Component {
                 );
             case 'post_review':
                 return (
-                    <ReviewForm
+                    <SubmitReviewForm
                         movie={this.props.selectedMovie}
                         review={this.state.review}
                         updateReview={this.updateReview}
@@ -182,12 +183,13 @@ class Movie extends Component {
                             updateDetails={this.updateDetails}
                             putMovie={this.putMovie}
                             buttonHandler={this.buttonHandler}
+                            updateGenres={this.updateGenres}
                         />
                 );
             case 'add_roles':
                 if (this.state.newRoles && this.props.actors) {
                     return (
-                        <RoleForm rolesArray={this.state.newRoles} updateNewRoles={this.updateNewRoles}
+                        <AddMovieRolesForm rolesArray={this.state.newRoles} updateNewRoles={this.updateNewRoles}
                                   actors={this.props.actors} addNewRole={this.addNewRole}
                                   updateSelectedActor={this.updateSelectedActor}
                                   selectValues={this.state.selectValues} submitNewRoles={this.submitNewRoles}
@@ -204,7 +206,7 @@ class Movie extends Component {
                 console.log("edited roles:");
                 console.log(this.state.editedRoles);
                 return (
-                  <EditRolesForm
+                  <EditMovieRolesForm
                       editedRoles={this.state.editedRoles}
                       actors={this.props.actors}
                       updateEditedRoles={this.updateEditedRoles}
@@ -289,7 +291,8 @@ class Movie extends Component {
             year: this.props.selectedMovie.year,
             image_url: this.props.selectedMovie.image_url,
             genre: this.props.selectedMovie.genre,
-            trailer_url: this.props.selectedMovie.trailer_url
+            trailer_url: this.props.selectedMovie.trailer_url,
+            genres: this.props.selectedMovie.genres
         }
         this.setState({
             movieDetails: movieDetails
@@ -480,15 +483,17 @@ class Movie extends Component {
         })
     }
 
-    render() {
+    updateGenres(selected) {
+        console.log("selected:");
+        console.log(selected);
+        this.setState({
+            movieDetails : selected
+        });
+        console.log("movie details:");
+        console.log(this.state.movieDetails)
+    }
 
-        const RoleInfo = ({roles}) => {
-            return roles.map((role, i) =>
-                <p key={i}>
-                    <b>{role.actor_name}</b> as {role.char_name}
-                </p>
-            )
-        };
+    render() {
 
         const MovieHeading = () => {
             return (
@@ -526,19 +531,9 @@ class Movie extends Component {
                         </p>
                     </ListGroupItem>
                     <ListGroupItem>
-                        <h3>
-                            <b>
-                                {this.props.movieRoles && this.props.selectedMovie ? this.props.selectedMovie.title + " roles" :
-                                    <p>..loading roles</p>}
-                            </b>
-                        </h3>
-                        {
-                            this.props.movieRoles ?
-                                <RoleInfo
-                                    roles={this.props.movieRoles}
-                                />
-                                : <p>...loading roles</p>
-                        }
+                        <MovieRoleScroller
+                            movieRoles={this.props.movieRoles}
+                        />
                     </ListGroupItem>
                     <TrailerDisplay selectedMovie={this.props.selectedMovie} />
                 </ListGroup>
@@ -554,13 +549,9 @@ class Movie extends Component {
                     </ButtonToolbar>
                 </Panel.Body>
                     {this.buttonSwitch()}
-                <Panel.Body>
-
-                </Panel.Body>
             </Panel>
         )
     }
-
 }
 
 class TrailerDisplay extends Component {
@@ -576,15 +567,18 @@ class TrailerDisplay extends Component {
         if (this.props.selectedMovie && this.props.selectedMovie.trailer_url) {
             return (
                 <ListGroupItem>
-                    <Panel.Body>
-                        <h3>
-                            <b>
-                                {"Watch trailer for " + this.props.selectedMovie.title}
-                            </b>
-                        </h3>
-                        <ReactPlayer
-                            url={this.props.selectedMovie.trailer_url}
-                        />
+                    <Panel.Body >
+                        <div class="Trailer">
+                            <h3>
+                                <b>
+                                    {"Watch trailer for " + this.props.selectedMovie.title}
+                                </b>
+                            </h3>
+                            <ReactPlayer
+                                url={this.props.selectedMovie.trailer_url}
+                            />
+                        </div>
+
                     </Panel.Body>
                 </ListGroupItem>
             )
@@ -618,305 +612,6 @@ const ReviewInfo = ({reviews}) => {
         )
     )
 };
-
-
-class RoleForm extends Component {
-    constructor(props) {
-        super(props);
-        console.log("RoleForm props:");
-        console.log(props);
-        console.log("roles array");
-        console.log(props.rolesArray);
-    }
-
-    render() {
-        console.log("actors in role form:");
-        console.log(this.props.actors);
-        return (
-            <ListGroup>
-                <Panel.Body>
-                    <h3>
-                        <b>
-                            {this.props.rolesArray.length > 0 ? "Add roles" : <p></p> }
-                        </b>
-                    </h3>
-                    <Form horizonal>
-                        {
-                            this.props.rolesArray.map((role, i) => {
-                                return (
-                                    <div>
-                                        <FormGroup controlId={i}>
-                                            <Col componentClass={ControlLabel} sm={2}>
-                                                Actor Name:
-                                            </Col>
-                                            <Col sm={10}>
-                                                <FormControl componentClass="select" onChange={this.props.updateSelectedActor}>
-                                                    {
-                                                        this.props.actors.map( (actor, j)  => {
-                                                            return (
-                                                                <option
-                                                                    value={j}
-                                                                >
-                                                                    {actor.name}
-                                                                </option>
-                                                            )
-                                                        })
-                                                    }
-                                                </FormControl>
-                                            </Col>
-                                        </FormGroup>
-                                        <FormGroup controlId={"char_name" + i.toString()}>
-                                            <Row>
-                                                <Col componentClass={ControlLabel} sm={2}>Character:
-                                                </Col>
-                                                <Col sm={10}>
-                                                    <FormControl
-                                                        onChange={this.props.updateNewRoles} value={this.props.rolesArray[i].char_name} type="text"
-                                                    />
-                                                </Col>
-                                            </Row>
-                                        </FormGroup>
-                                    </div>
-                                )
-                            })
-                        }
-                        <FormGroup>
-                            {this.props.rolesArray.length > 0 ? <Button onClick={this.props.deleteRole}> Delete Role</Button> : <p></p> }
-                        </FormGroup>
-                        <FormGroup>
-                            <Button onClick={this.props.addNewRole}>Add role</Button>
-                        </FormGroup>
-                        <FormGroup>
-                            {this.props.rolesArray.length >0 ? <Button onClick={this.props.submitNewRoles}> Submit Roles </Button> : <p></p>}
-                        </FormGroup>
-                    </Form>
-                </Panel.Body>
-            </ListGroup>
-        )
-    }
-}
-
-class EditRolesForm extends Component {
-    constructor(props) {
-        super(props);
-        console.log("edit roles props:");
-        console.log(this.props);
-    };
-
-    render() {
-        console.log("movie roles:");
-        console.log(this.props.editedRoles);
-        if (!this.props.editedRoles) {
-            return (
-                <p></p>
-            );
-        } else {
-            return (
-                <ListGroup>
-                    <Panel.Body>
-                        <h3>
-                            <b>
-                                {this.props.editedRoles.length > 0 ? "Edit roles" : <p>There are no roles submited for this movie. Add some by pressing the "Add role(s)" button </p> }
-                            </b>
-                        </h3>
-                        <Form horizonal>
-                            {
-                                this.props.editedRoles.map((role, i) => {
-                                    return (
-                                        <div>
-                                            <FormGroup>
-                                                <Col componentClass={ControlLabel} sm={2}>
-                                                    Actor Name:
-                                                </Col>
-                                                <Col sm={10}>
-                                                    <select id={i} className="form-control" onChange={this.props.updateSelectedActor2} >
-                                                        {
-                                                            this.props.actors.map( (actor, j)  => {
-                                                                if (role.actor_name === actor.name) {
-                                                                    console.log("found a match");
-                                                                    console.log("actor name:");
-                                                                    console.log(actor.name);
-                                                                    console.log("movie role");
-                                                                    console.log(role);
-                                                                    return (
-                                                                        <option selected
-                                                                            value={j}
-                                                                        >
-                                                                            {actor.name}
-                                                                        </option>
-                                                                    )
-                                                                }
-                                                                else {
-                                                                    return (
-                                                                        <option
-                                                                            value={j}
-                                                                        >
-                                                                            {actor.name}
-                                                                        </option>
-                                                                    )
-                                                                }
-
-                                                            })
-                                                        }
-                                                    </select>
-                                                </Col>
-                                            </FormGroup>
-                                            <FormGroup controlId={"char_name" + i.toString()}>
-                                                <Row>
-                                                    <Col componentClass={ControlLabel} sm={2}>Character:
-                                                    </Col>
-                                                    <Col sm={10}>
-                                                        <FormControl
-                                                            value={this.props.editedRoles[i].char_name} type="text"
-                                                            onChange={this.props.updateEditedRoles}
-                                                        />
-                                                    </Col>
-                                                </Row>
-                                            </FormGroup>
-                                        </div>
-                                    )
-                                })
-                            }
-                            <FormGroup>
-                                {this.props.editedRoles.length >0 ? <Button onClick={this.props.submitEditedRoles}> Submit Roles </Button> : <p></p>}
-                            </FormGroup>
-                        </Form>
-                    </Panel.Body>
-                </ListGroup>
-            )
-        }
-    }
-}
-
-class MovieEditForm extends Component {
-    constructor(props) {
-        super(props);
-        console.log("props for movie edit form:")
-        console.log(this.props);
-        this.state = {
-            startingTitle : this.props.movie.title
-        };
-    }
-
-    render() {
-        console.log("props for movie edit form:")
-        console.log(this.props);
-        if (!this.props.movie){
-            return (
-                <p>...loading</p>
-            )
-        }
-        else {
-            return (
-                <ListGroup>
-                    <Panel.Body>
-                        <h3><b>Edit {this.state.startingTitle} details</b></h3>
-                        <Form horizontal>
-                            <FormGroup controlId="title">
-                                <Col componentClass={ControlLabel} sm={2}>Title:</Col>
-                                <Col sm={10}>
-                                    <FormControl
-                                        onChange={this.props.updateDetails} value={this.props.movie.title} type="text"
-                                    />
-                                </Col>
-                            </FormGroup>
-                            <FormGroup controlId="year">
-                                <Col componentClass={ControlLabel} sm={2} >Year:</Col>
-                                <Col sm={10} >
-                                    <FormControl
-                                        onChange={this.props.updateDetails} value={this.props.movie.year} type="text"
-                                    />
-                                </Col>
-                            </FormGroup>
-                            <FormGroup controlId="genre">
-                                <Col componentClass={ControlLabel} sm={2} >Genre:</Col>
-                                <Col sm={10} >
-                                    <FormControl
-                                        onChange={this.props.updateDetails} value={this.props.movie.genre} type="text"
-                                    />
-                                </Col>
-                            </FormGroup>
-                            <FormGroup controlId="image_url">
-                                <Col componentClass={ControlLabel} sm={2} >Cover image:</Col>
-                                <Col sm={10} >
-                                    <FormControl
-                                        onChange={this.props.updateDetails} value={this.props.movie.image_url} type="text"
-                                    />
-                                </Col>
-                            </FormGroup>
-                            <FormGroup controlId="trailer_url">
-                                <Col componentClass={ControlLabel} sm={2} >Trailer video:</Col>
-                                <Col sm={10} >
-                                    <FormControl
-                                        onChange={this.props.updateDetails} value={this.props.movie.trailer_url} type="text"
-                                    />
-                                </Col>
-                            </FormGroup>
-                            <FormGroup>
-                                <Button onClick={this.props.putMovie}> Submit Changes </Button>
-                            </FormGroup>
-                            <FormGroup>
-                                <Button onClick={this.props.buttonHandler}> hide </Button>
-                            </FormGroup>
-                        </Form>
-                    </Panel.Body>
-                </ListGroup>
-            )
-        }
-    }
-}
-
-class ReviewForm extends Component {
-    constructor(props) {
-        super(props);
-        console.log("Review form props:")
-        console.log(props)
-        //this.handleChange = this.handleChange.bind(this);
-    }
-
-    render() {
-        if (!this.props.movie){
-            return (
-                    <p>...loading</p>
-                )
-        }
-        else {
-            return (
-                <ListGroup>
-                    <Panel.Body>
-                        <Form horizontal>
-                            <h3>
-                                <b>
-                                    Submit a Review for {this.props.movie.title}
-                                </b>
-                            </h3>
-                            <FormGroup controlId="rating">
-                                <StarRatings
-                                    rating={this.props.review.rating}
-                                    starRatedColor="blue"
-                                    changeRating={this.props.changeRating}
-                                    name='rating'
-                                />
-                            </FormGroup>
-                            <FormGroup controlId="quote">
-                                    <textarea
-                                        id="quote" onChange={this.props.updateReview} value={this.props.review.quote} type="quote" placeholder="Write a review"
-                                    />
-                            </FormGroup>
-                            <FormGroup>
-                                <Button onClick={this.props.postReview}> Submit Review </Button>
-                            </FormGroup>
-                            <FormGroup>
-                                <Button onClick={this.props.buttonHandler}> Hide </Button>
-                            </FormGroup>
-                        </Form>
-                    </Panel.Body>
-                </ListGroup>
-            )
-        }
-
-    }
-}
 
 const mapStateToProps = (state, ownProps) => {
     console.log("map state to props called");

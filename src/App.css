@@ -50,6 +50,42 @@
   margin-left: 30%
 }
 
+.RoleScroll {
+  display : flex;
+  overflow-x : auto;
+}
+
+.RoleScrollItem {
+  height: 300px;
+  margin: 5px;
+  text-align: center;
+  align-items: center;
+  justify-content: center;
+  margin: auto;
+  padding: 10px;
+}
+
+.dropdown-heading-value {
+  text-align : left;
+}
+
+.select-item {
+  text-align : left;
+}
+
+.ytp-cued-thumbnail-overlay {
+  align-items: center;
+  justify-content: center;
+}
+
+.RoleScrollItem img {height: 200px;}
+
+.Trailer {
+  text-align: center;
+  align-items: center;
+  justify-content: center;
+}
+
 @keyframes App-logo-spin {
   from {
     transform: rotate(0deg);

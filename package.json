@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@khanacademy/react-multi-select": "^0.3.3",
     "@mars/heroku-js-runtime-env": "^3.0.2",
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.3.2",
@@ -10,7 +11,10 @@
     "prop-types": "^15.7.2",
     "react": "^16.12.0",
     "react-bootstrap": "^0.32.4",
+    "react-bootstrap-table-next": "^4.0.3",
     "react-dom": "^16.12.0",
+    "react-list": "^0.8.15",
+    "react-multi-select-component": "^2.0.12",
     "react-player": "^2.3.1",
     "react-redux": "^7.2.0",
     "react-router-bootstrap": "^0.25.0",
