@@ -80,7 +80,7 @@ class Movie extends Component {
         this.deleteRole = this.deleteRole.bind(this);
         this.buttonHandler = this.buttonHandler.bind(this);
         this.submitEditedRoles = this.submitEditedRoles.bind(this);
-        this.updateGenres = this.updateGenres.bind(this);
+        this.changeGenres = this.changeGenres.bind(this);
     }
 
 
@@ -183,7 +183,7 @@ class Movie extends Component {
                             updateDetails={this.updateDetails}
                             putMovie={this.putMovie}
                             buttonHandler={this.buttonHandler}
-                            updateGenres={this.updateGenres}
+                            changeGenres={this.changeGenres}
                         />
                 );
             case 'add_roles':
@@ -285,14 +285,20 @@ class Movie extends Component {
     }
 
     setDetails() {
+        let selectedGenres = [];
+        if (this.props.selectedMovie.genres) {
+            selectedGenres = this.props.selectedMovie.genres.map (genre => {
+                return { label: genre, value: genre }
+            });
+        }
+
         let movieDetails = {
             movie_id: this.props.movieId,
             title: this.props.selectedMovie.title,
             year: this.props.selectedMovie.year,
             image_url: this.props.selectedMovie.image_url,
-            genre: this.props.selectedMovie.genre,
             trailer_url: this.props.selectedMovie.trailer_url,
-            genres: this.props.selectedMovie.genres
+            selectedGenres: selectedGenres
         }
         this.setState({
             movieDetails: movieDetails
@@ -385,7 +391,15 @@ class Movie extends Component {
         console.log(this.state.movieDetails);
         this.setState({userState: userStates.NO_STATE});
         const {dispatch} = this.props;
-        dispatch(newPutMovie(this.state.movieDetails));
+        let genres = this.state.movieDetails.selectedGenres.map( genre => genre.value);
+        console.log("genres:");
+        console.log(genres);
+        let updatedDetails = this.state.movieDetails;
+        updatedDetails.genres = genres;
+        this.setState({
+            movieDetails : updatedDetails
+        }, () => dispatch(newPutMovie(this.state.movieDetails)));
+
     }
 
     componentDidMount() {
@@ -483,14 +497,17 @@ class Movie extends Component {
         })
     }
 
-    updateGenres(selected) {
-        console.log("selected:");
-        console.log(selected);
+    changeGenres(event) {
+        console.log("in change genres:")
+        console.log("event:");
+        console.log(event);
+        let updatedDetails = this.state.movieDetails;
+        updatedDetails.selectedGenres = event;
         this.setState({
-            movieDetails : selected
+            movieDetails : updatedDetails
         });
-        console.log("movie details:");
-        console.log(this.state.movieDetails)
+        console.log("movieDetails:");
+        console.log(this.state.movieDetails);
     }
 
     render() {
@@ -504,7 +521,7 @@ class Movie extends Component {
                         </b>
 
                     </h1>
-                    {this.props.selectedMovie.genre + " (" + this.props.selectedMovie.year + ")"}
+                    {this.props.selectedMovie.genres.join(", ") + " (" + this.props.selectedMovie.year + ")"}
                 </div>
             )
         };

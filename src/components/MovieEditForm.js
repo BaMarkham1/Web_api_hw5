@@ -42,20 +42,12 @@ class MovieEditForm extends Component {
                                     />
                                 </Col>
                             </FormGroup>
-                            <FormGroup controlId="genre">
-                                <Col componentClass={ControlLabel} sm={2} >Genre:</Col>
-                                <Col sm={10} >
-                                    <FormControl
-                                        onChange={this.props.updateDetails} value={this.props.movie.genre} type="text"
-                                    />
-                                </Col>
-                            </FormGroup>
                             <FormGroup>
                                 <Col componentClass={ControlLabel} sm={2} >Genre: </Col>
                                 <Col sm={10} >
                                     <GenreSelector
-                                        genres={this.props.movie.genres}
-                                        updateGenres={this.props.updateGenres}
+                                        selectedGenres={this.props.movie.selectedGenres}
+                                        changeGenres={this.props.changeGenres}
                                     />
                                 </Col>
                             </FormGroup>

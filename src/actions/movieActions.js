@@ -293,6 +293,7 @@ export function postRole(newRole, movieId){
 
 export function newPutMovie(movieDetails){
     const env = runtimeEnv();
+    console.log(movieDetails);
     return dispatch => {
         return fetch(`${env.REACT_APP_API_URL}/movies/`, {
             method: 'PUT',
