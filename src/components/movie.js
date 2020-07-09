@@ -533,7 +533,7 @@ class Movie extends Component {
                 </Panel.Heading>
                 <Panel.Body><Image className="image"
                                    src={this.props.selectedMovie ? this.props.selectedMovie.image_url : this.state.empty_photo}
-                                   thumbnail width="330" height="400"/></Panel.Body>
+                                   thumbnail/></Panel.Body>
                 <ListGroup>
                     <ListGroupItem>
                         <StarRatings
@@ -557,11 +557,11 @@ class Movie extends Component {
                 <Panel.Body>
                     <ButtonToolbar>
                         <ButtonGroup>
-                            <button id="see_reviews" onClick={this.buttonHandler}>See Reviews</button>
-                            <button id="post_review" onClick={this.buttonHandler}>Post Review</button>
-                            <button id="edit_movie" onClick={this.buttonHandler}>Edit Movie Details</button>
-                            <button id="add_roles" onClick={this.buttonHandler}>Add Roles</button>
-                            <button id="edit_roles" onClick={this.buttonHandler}>Edit Roles</button>
+                            <button id="see_reviews" class="btn btn-primary btn-sm"onClick={this.buttonHandler}>See Reviews</button>
+                            <button id="post_review" class="btn btn-primary btn-sm" onClick={this.buttonHandler}>Post Review</button>
+                            <button id="edit_movie" class="btn btn-primary btn-sm" onClick={this.buttonHandler}>Edit Movie Details</button>
+                            <button id="add_roles" class="btn btn-primary btn-sm" onClick={this.buttonHandler}>Add Roles</button>
+                            <button id="edit_roles" class="btn btn-primary btn-sm" onClick={this.buttonHandler}>Edit Roles</button>
                         </ButtonGroup>
                     </ButtonToolbar>
                 </Panel.Body>
@@ -585,16 +585,17 @@ class TrailerDisplay extends Component {
             return (
                 <ListGroupItem>
                     <Panel.Body >
-                        <div class="Trailer">
+
                             <h3>
                                 <b>
                                     {"Watch trailer for " + this.props.selectedMovie.title}
                                 </b>
                             </h3>
-                            <ReactPlayer
-                                url={this.props.selectedMovie.trailer_url}
-                            />
-                        </div>
+                            <div className="Trailer">
+                                <ReactPlayer
+                                    url={this.props.selectedMovie.trailer_url}
+                                />
+                            </div>
 
                     </Panel.Body>
                 </ListGroupItem>
@@ -643,6 +644,6 @@ const mapStateToProps = (state, ownProps) => {
         movieRoles: state.movie.movieRoles,
         actors: state.movie.actors
     }
-}
+};
 
 export default withRouter(connect(mapStateToProps)(Movie));

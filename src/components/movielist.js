@@ -2,16 +2,89 @@ import React, { Component } from 'react';
 import { fetchMovies } from '../actions/movieActions';
 import { setMovie } from '../actions/movieActions';
 import {connect} from "react-redux";
-import {Image, ListGroupItem} from 'react-bootstrap'
-import { Carousel } from 'react-bootstrap'
-import { Glyphicon } from 'react-bootstrap'
-import {LinkContainer} from 'react-router-bootstrap';
-import StarRatings from "react-star-ratings";
+import {ButtonGroup, ButtonToolbar, Image, ListGroupItem, Panel} from 'react-bootstrap'
+import AddMovieForm from "./AddMovieForm";
+import MovieCarousel from "./MovieCarousel";
+
+const userStates = {
+    NO_STATE : "no_state",
+    ADD_MOVIE : "add_movie",
+    FILTER_MOVIE : "filter_movie",
+};
 
 class MovieList extends Component {
     constructor(props) {
         super(props);
+        this.state = {
+            //for add new movie
+            newMovie : {
+                title : "",
+                year : "",
+                image_url: "",
+                trailer_url: "",
+                selectedGenres: []
+            },
+            userState: userStates.NO_STATE
+        };
+        this.updateNewMovie = this.updateNewMovie.bind(this);
+        this.buttonHandler = this.buttonHandler.bind(this);
         this.handleSelect = this.handleSelect.bind(this);
+    };
+
+    updateNewMovie(event) {
+        let updatedMovie = Object.assign({}, this.state.newMovie);
+        updatedMovie[event.target.id] = event.target.value;
+        this.setState({
+            newMovie : updatedMovie
+        });
+    }
+
+    buttonHandler(button) {
+        switch (button.target.id) {
+            case 'add_movie':
+                console.log("add movie");
+                this.setState({
+                    userState: userStates.ADD_MOVIE
+                });
+                break;
+            case 'filter_movies':
+                console.log("filter movies");
+                this.setState({
+                    userState: userStates.FILTER_MOVIE
+                });
+                break;
+            default:
+                console.log("no cases met");
+                this.setState({
+                    userState: userStates.NO_STATE
+                });
+                break;
+        }
+    }
+
+    postMovie() {
+        console.log("postMovie called")
+    }
+
+    actionSwitch() {
+        console.log("user state:");
+        console.log(this.state.userState);
+        switch (this.state.userState) {
+            case 'add_movie':
+                return (
+                    <AddMovieForm
+                        newMovie={this.state.newMovie}
+                        updateNewMovie={this.updateNewMovie}
+                        postMovie={this.postMovie}
+                        buttonHandler={this.buttonHandler}
+
+                    />
+                );
+            case 'filter_movies':
+                break;
+            default:
+                break;
+        }
     }
 
     componentDidMount() {
@@ -27,41 +100,32 @@ class MovieList extends Component {
     handleClick = (movie) => {
         const {dispatch} = this.props;
         dispatch(setMovie(movie));
-    }
+    };
+
+
 
     render() {
-        {console.log("props:")}
-        {console.log(this.props)}
-        {console.log("state:")}
-        {console.log(this.state)}
-        const MovieListCarousel= ({movieList}) => {
-            if (!movieList) { // evaluates to true if currentMovie is null
-                return <div>Loading...</div>;
-            }
-            return (
-                    <Carousel onSelect={this.handleSelect}>
-                        {movieList.map((movie) =>
-                            <Carousel.Item key={movie._id}>
-                                <div>
-                                    <LinkContainer to={'/movies/'+movie._id} onClick={()=>this.handleClick(movie)}>
-                                        <Image className="image" src={movie.image_url} thumbnail width="300" height="450" />
-                                    </LinkContainer>
-                                </div>
-                                <Carousel.Caption>
-                                    <h3>{movie.title}</h3>
-                                    <StarRatings
-                                        rating={movie.avg_rating}
-                                        starRatedColor="blue"
-                                    />
-                                    <h4>{movie.genre + " (" + movie.year + ")"}</h4>
-                                </Carousel.Caption>
-                            </Carousel.Item>)}
-                    </Carousel>
-            )
-        }
-
+        console.log("props:");
+        console.log(this.props);
+        console.log("state:");
+        console.log(this.state);
         return (
-          <MovieListCarousel movieList={this.props.movies} />
+            <Panel className="panel">
+                <Panel.Body>
+                    <MovieCarousel
+                        movies={this.props.movies}
+                        handleClick={this.handleClick}
+                    />
+                </Panel.Body>
+                <Panel.Body>
+                    <ButtonToolbar>
+                        <ButtonGroup>
+                            <button id="add_movie" class="btn btn-primary btn-sm" onClick={this.buttonHandler}>Add new movie</button>
+                        </ButtonGroup>
+                    </ButtonToolbar>
+                </Panel.Body>
+                {this.actionSwitch()}
+            </Panel>
         );
     }
 }

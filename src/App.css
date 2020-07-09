@@ -24,6 +24,10 @@
   color: green;
 }
 
+.image {
+  height: 350px;
+}
+
 .App-title {
   font-size: 1.5em;
 }
@@ -55,6 +59,11 @@
   overflow-x : auto;
 }
 
+.ReviewScroll {
+  display : flex;
+  overflow-y : auto;
+}
+
 .RoleScrollItem {
   height: 300px;
   margin: 5px;
@@ -78,9 +87,15 @@
   justify-content: center;
 }
 
+.btn-toolbar {
+  display: flex;
+  justify-content: center
+}
+
 .RoleScrollItem img {height: 200px;}
 
 .Trailer {
+  display: flex;
   text-align: center;
   align-items: center;
   justify-content: center;
@@ -107,3 +122,5 @@ body {
   padding: 0;
   font-family: sans-serif;
 }
+
+

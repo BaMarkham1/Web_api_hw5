@@ -11,14 +11,15 @@ class GenreSelector extends Component {
         this.state = {
             genres : [
                 {label: "Action", value: "Action"},
-                {label: "Horror", value: "Horror"},
-                {label: "Comedy", value: "Comedy"},
                 {label: "Adventure", value: "Adventure"},
-                {label: "Science Fiction", value: "Science Fiction"},
-                {label: "Romance", value: "Romance"},
+                {label: "Comedy", value: "Comedy"},
+                {label: "Drama", value: "Drama"},
+                {label: "Horror", value: "Horror"},
                 {label: "Fantasy", value: "Fantasy"},
+                {label: "Romance", value: "Romance"},
+                {label: "Science Fiction", value: "Science Fiction"},
                 {label: "Sports", value: "Sports"},
-                {label: "Drama", value: "Drama"}
+
             ]
         };
 
