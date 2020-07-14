@@ -10,7 +10,7 @@ class AddMovieForm extends Component {
     }
 
     render() {
-        console.log("props for movie edit form:")
+        console.log("props for add movie form:")
         console.log(this.props);
         return (
             <ListGroup>

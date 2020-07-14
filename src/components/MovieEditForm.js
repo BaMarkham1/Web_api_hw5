@@ -1,6 +1,7 @@
 import React, {Component} from "react";
 import {Button, Col, ControlLabel, Form, FormControl, FormGroup, ListGroup, Panel} from "react-bootstrap";
 import GenreSelector from "./GenreSelector";
+import Popup from "reactjs-popup";
 
 class MovieEditForm extends Component {
     constructor(props) {

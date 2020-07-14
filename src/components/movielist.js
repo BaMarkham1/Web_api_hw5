@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { fetchMovies } from '../actions/movieActions';
+import {fetchMovies, newPostMovie} from '../actions/movieActions';
 import { setMovie } from '../actions/movieActions';
 import {connect} from "react-redux";
 import {ButtonGroup, ButtonToolbar, Image, ListGroupItem, Panel} from 'react-bootstrap'
@@ -21,15 +21,33 @@ class MovieList extends Component {
                 title : "",
                 year : "",
                 image_url: "",
+                selectedGenres: [],
                 trailer_url: "",
-                selectedGenres: []
+                genres:[]
             },
             userState: userStates.NO_STATE
         };
         this.updateNewMovie = this.updateNewMovie.bind(this);
         this.buttonHandler = this.buttonHandler.bind(this);
         this.handleSelect = this.handleSelect.bind(this);
+        this.postMovie = this.postMovie.bind(this);
+        this.changeGenres = this.changeGenres.bind(this);
     };
+
+    changeGenres(event) {
+        console.log("in change genres:")
+        console.log("event:");
+        console.log(event);
+        let updatedDetails = this.state.newMovie;
+        updatedDetails.selectedGenres = event;
+        this.setState({
+            newMovie : updatedDetails
+        }, () => {
+            console.log("new movie:");
+            console.log(this.state.newMovie);
+        });
+
+    }
 
     updateNewMovie(event) {
         let updatedMovie = Object.assign({}, this.state.newMovie);
@@ -63,7 +81,35 @@ class MovieList extends Component {
     }
 
     postMovie() {
-        console.log("postMovie called")
+        console.log("post movie called");
+        console.log("new movie details:");
+        console.log(this.state.newMovie);
+        this.setState({userState: userStates.NO_STATE});
+        const {dispatch} = this.props;
+        let genres = this.state.newMovie.selectedGenres.map( genre => genre.value);
+        console.log("genres:");
+        console.log(genres);
+        let updatedDetails = this.state.newMovie;
+        updatedDetails.genres = genres;
+        this.setState({
+            newMovie : updatedDetails
+        }, () => {
+                console.log("new movie in post movie:");
+                console.log(this.state.newMovie);
+                dispatch(newPostMovie(this.state.newMovie));
+                console.log("resetting new movie")
+                let newMovie = {
+                    title: "",
+                    year: "",
+                    image_url: "",
+                    selectedGenres: [],
+                    trailer_url: "",
+                    genres:[]
+                };
+                this.setState({
+                    newMovie: newMovie
+                })
+            })
     }
 
     actionSwitch() {
@@ -77,7 +123,7 @@ class MovieList extends Component {
                         updateNewMovie={this.updateNewMovie}
                         postMovie={this.postMovie}
                         buttonHandler={this.buttonHandler}
-
+                        changeGenres={this.changeGenres}
                     />
                 );
             case 'filter_movies':

@@ -322,3 +322,37 @@ export function newPutMovie(movieDetails){
         })
     }
 }
+
+export function newPostMovie(movieDetails){
+    const env = runtimeEnv();
+    console.log(movieDetails);
+    return dispatch => {
+        console.log("movie to be posted:");
+        console.log(movieDetails);
+        return fetch(`${env.REACT_APP_API_URL}/movies/`, {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Authorization': localStorage.getItem('token')
+            },
+            body: JSON.stringify(movieDetails),
+            mode: 'cors'})
+            .then( (response) => {
+                console.log(response);
+                if (!response.ok) {
+                    throw Error(response.statusText);
+                }
+                console.log("response:")
+                console.log(response.json);
+                if (response.status == 200) {
+                    console.log("status was 200");
+                    //dispatch(fetchMovies(movieDetails.movie_id));
+                }
+                return response.json;
+            })
+            .catch( (e) => {
+                console.log(e)
+            })
+    }
+}
