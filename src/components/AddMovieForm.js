@@ -5,7 +5,7 @@ import GenreSelector from "./GenreSelector";
 class AddMovieForm extends Component {
     constructor(props) {
         super(props);
-        console.log("props for movie edit form:")
+        console.log("props for add movie form:")
         console.log(this.props);
     }
 
@@ -59,7 +59,7 @@ class AddMovieForm extends Component {
                             </Col>
                         </FormGroup>
                         <FormGroup>
-                            <Button onClick={this.props.postMovie}> Submit Changes </Button>
+                            <Button onClick={this.props.postMovie}> Submit New Movie </Button>
                         </FormGroup>
                         <FormGroup>
                             <Button onClick={this.props.buttonHandler}> hide </Button>

@@ -374,14 +374,8 @@ class Movie extends Component {
         this.state.review.movie_id = this.props.movieId;
         dispatch(postNewReview(this.state.review));
         //this.forceUpdate();
-        this.setState({state: this.state});
-        this.setState({reviewed: true});
-        //dispatch(fetchMovie(this.props.movieId));
-        let reviewArray = this.props.selectedMovie.reviews;
-        let newReview = {name: this.state.review.name, quote: this.state.review.quote, rating: this.state.review.rating}
-        reviewArray.unshift(newReview);
         this.setState({
-            reviews: reviewArray
+            userState : userStates.SEE_REVIEWS
         });
     }
 
@@ -541,10 +535,13 @@ class Movie extends Component {
                             starRatedColor="blue"
                         />
                         <p>
-                            Community Rating: {this.props.selectedMovie ?
-                                this.props.selectedMovie.avg_rating
-                                :
-                                <p>...loading rating</p>}
+                            {
+                                this.props.reviews && this.props.reviews.length > 0 && this.props.selectedMovie?
+                                    "Community Rating: " + this.props.selectedMovie.avg_rating
+                                    :
+                                    "Be the first to post a review for this movie!"
+
+                            }
                         </p>
                     </ListGroupItem>
                     <ListGroupItem>
