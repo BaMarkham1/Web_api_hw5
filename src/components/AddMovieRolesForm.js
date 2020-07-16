@@ -1,5 +1,5 @@
 import React, {Component} from "react";
-import {Button, Col, ControlLabel, Form, FormControl, FormGroup, ListGroup, Panel, Row} from "react-bootstrap";
+import {Button, Col, Checkbox, ControlLabel, Form, FormControl, FormGroup, ListGroup, Panel, Row} from "react-bootstrap";
 
 class AddMovieRolesForm extends Component {
     constructor(props) {

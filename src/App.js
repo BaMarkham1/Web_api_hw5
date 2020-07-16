@@ -8,6 +8,8 @@ import Authentication from './components/authentication';
 import {HashRouter,Route} from 'react-router-dom';
 import { Provider } from 'react-redux'
 import store from './stores/store'
+//import "bootstrap/dist/css/bootstrap.css";
+//import "bootstrap-slider/dist/css/bootstrap-slider.css"
 
 function App() {
   return (
