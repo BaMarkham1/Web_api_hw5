@@ -24,6 +24,15 @@ function movieFetched(movie) {
     }
 }
 
+function actorFetched(actor) {
+    console.log("in actorFetched");
+    console.log(actor);
+    return {
+        type: actionTypes.FETCH_ACTOR,
+        selectedActor: actor
+    }
+}
+
 function reviewsFetched(reviews) {
     console.log("in reviews fetched");
     console.log(reviews);
@@ -41,6 +50,7 @@ function movieRolesFetched(movieRoles) {
         movieRoles: movieRoles
     }
 }
+
 
 function movieSet(movie) {
     return {
@@ -68,11 +78,11 @@ export function setActor(actor) {
     }
 }
 
-export function fetchMovies() {
+export function fetchMovies(queryString) {
     const env = runtimeEnv();
     return dispatch => {
         console.log("in fetch movies");
-        return fetch(`${env.REACT_APP_API_URL}/movies`, {
+        return fetch(`${env.REACT_APP_API_URL}/movies` + queryString, {
             method: 'GET',
             headers: {
                 'Accept': 'application/json',
@@ -138,6 +148,31 @@ export function fetchMovie(movieId){
             })
             .then( (res) => {
                 dispatch(movieFetched(res.movie));
+            })
+            .catch( (e) => console.log(e) );
+    }
+}
+
+export function fetchActor(actorId){
+    const env = runtimeEnv();
+    console.log("in fetchActor");
+    return dispatch => {
+        return fetch(`${env.REACT_APP_API_URL}/actors/${actorId}`, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Authorization': localStorage.getItem('token')
+            },
+            mode: 'cors'})
+            .then( (response) => {
+                if (!response.ok) {
+                    throw Error(response.statusText);
+                }
+                return response.json();
+            })
+            .then( (res) => {
+                dispatch(actorFetched(res.actor));
             })
             .catch( (e) => console.log(e) );
     }

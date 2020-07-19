@@ -204,7 +204,7 @@ class MovieFilterForm extends Component {
                     </Checkbox>
                 </FormGroup>
                 <FormGroup>
-                    <Button> Apply Filters </Button>
+                    <Button onClick={this.props.applyFilters}> Apply Filters </Button>
                 </FormGroup>
                 <FormGroup>
                     <Button onClick={this.props.buttonHandler}> hide </Button>

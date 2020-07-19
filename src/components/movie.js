@@ -10,7 +10,18 @@ import {
 } from 'react-bootstrap'
 import { Image } from 'react-bootstrap'
 import { withRouter } from "react-router-dom";
-import {fetchMovie, fetchReviews, fetchActors, postNewReview, newPutMovie, fetchMovieRoles, postRole, putRole} from "../actions/movieActions";
+import {
+    fetchMovie,
+    fetchReviews,
+    fetchActors,
+    postNewReview,
+    newPutMovie,
+    fetchMovieRoles,
+    postRole,
+    putRole,
+    setMovie,
+    setActor
+} from "../actions/movieActions";
 import ReactPlayer from "react-player"
 //internal components
 import MovieRoleScroller from "./MovieRoleScroller";
@@ -35,8 +46,8 @@ class Movie extends Component {
 
     constructor(props) {
         super(props);
-        console.log("props in constructor:")
-        console.log(this.props)
+        console.log("props in movie constructor:");
+        console.log(this.props);
         this.state = {
             review: {
                 name: localStorage.getItem('username'),
@@ -81,8 +92,22 @@ class Movie extends Component {
         this.buttonHandler = this.buttonHandler.bind(this);
         this.submitEditedRoles = this.submitEditedRoles.bind(this);
         this.changeGenres = this.changeGenres.bind(this);
+        this.handleActorClick = this.handleActorClick.bind(this);
     }
 
+    handleActorClick(role) {
+        const {dispatch} = this.props;
+        console.log("role after click");
+        console.log(role);
+        let actor = {
+            _id : role.actor_id,
+            img_url : role.img_url,
+            name : role.actor_name
+        };
+        console.log("actor after handleActorClick")
+        console.log(actor);
+        dispatch(setActor(actor));
+    }
 
     buttonHandler(button) {
         switch (button.target.id) {
@@ -398,8 +423,8 @@ class Movie extends Component {
 
     componentDidMount() {
         console.log("component did mount");
-        console.log("props:")
-        console.log(this.props)
+        console.log("props:");
+        console.log(this.props);
         const {dispatch} = this.props;
         if (this.props.selectedMovie == null) {
             console.log("calling fetch movie");
@@ -525,9 +550,13 @@ class Movie extends Component {
                 <Panel.Heading>
                     {this.props.selectedMovie ? <MovieHeading/> : <p>loading details...</p>}
                 </Panel.Heading>
-                <Panel.Body><Image className="image"
-                                   src={this.props.selectedMovie ? this.props.selectedMovie.image_url : this.state.empty_photo}
-                                   thumbnail/></Panel.Body>
+                <Panel.Body>
+                    <Image
+                        className="image"
+                        src={this.props.selectedMovie ? this.props.selectedMovie.image_url : this.state.empty_photo}
+                        thumbnail
+                    />
+                </Panel.Body>
                 <ListGroup>
                     <ListGroupItem>
                         <StarRatings
@@ -547,6 +576,7 @@ class Movie extends Component {
                     <ListGroupItem>
                         <MovieRoleScroller
                             movieRoles={this.props.movieRoles}
+                            handleClick={this.handleActorClick}
                         />
                     </ListGroupItem>
                     <TrailerDisplay selectedMovie={this.props.selectedMovie} />

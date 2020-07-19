@@ -10,6 +10,7 @@ import MovieFilterForm from "./MovieFilterForm";
 import runtimeEnv from "@mars/heroku-js-runtime-env";
 import {LinkContainer} from "react-router-bootstrap";
 var mongoose = require('mongoose');
+const querystring = require('querystring');
 
 const userStates = {
     NO_STATE : "no_state",
@@ -18,6 +19,37 @@ const userStates = {
     NEW_MOVIE_SUBMITTED : "new_movie_submitted",
     ADD_ACTOR : "add_actor"
 };
+
+function getFilterQueryString(filters) {
+    console.log(filters)
+    let sortMap = {
+        "Year Released" : "year",
+        "Rating" : "avg_rating",
+        "Title" : "title"
+    };
+    let queryObject = {
+        minRating : filters.minRating,
+        maxRating : filters.maxRating,
+        minYear : filters.minYear,
+        maxYear : filters.maxYear,
+        sort : sortMap[filters.selectedSort]
+    };
+    if (filters.genres.length > 0) {
+        queryObject.genre = filters.genres;
+    }
+    if (filters.ascendingOrder == true) {
+        queryObject.ascendingOrder = true;
+    }
+    if (filters.excludeUnreviewed == true) {
+        queryObject.excludeUnreviewed = true;
+    }
+    console.log("Query object");
+    console.log(queryObject);
+    let queryString = "?" + querystring.stringify(queryObject);
+    console.log("Query string:");
+    console.log(queryString);
+    return queryString;
+}
 
 class MovieList extends Component {
     constructor(props) {
@@ -64,7 +96,32 @@ class MovieList extends Component {
         this.changeSlider = this.changeSlider.bind(this);
         this.updateSelectedSort = this.updateSelectedSort.bind(this);
         this.toggleCheckbox = this.toggleCheckbox.bind(this);
+        this.applyFilters = this.applyFilters.bind(this);
     };
+
+    applyFilters() {
+        console.log("apply filters called");
+        console.log("filters:");
+        console.log(this.state.fiters);
+        this.setState({userState: userStates.NO_STATE});
+        const {dispatch} = this.props;
+        let genres =[];
+        if (this.state.filters.selectedGenres) genres = this.state.filters.selectedGenres.map( genre => genre.value);
+        console.log("genres:");
+        console.log(genres);
+        let updatedFilters = this.state.filters;
+        updatedFilters.genres = genres;
+        this.setState({
+            filters : updatedFilters
+        }, () => {
+            console.log("updated filters:");
+            console.log(this.state.filters);
+            let queryString = getFilterQueryString(this.state.filters);
+            dispatch(fetchMovies(queryString));
+        })
+    }
+
+
 
     toggleCheckbox(event) {
         console.log("in update selected sort:")
@@ -257,6 +314,7 @@ class MovieList extends Component {
                         buttonHandler={this.buttonHandler}
                         updateSelectedSort={this.updateSelectedSort}
                         toggleCheckbox={this.toggleCheckbox}
+                        applyFilters={this.applyFilters}
                     />
                 );
             case 'new_movie_submitted':
@@ -284,7 +342,7 @@ class MovieList extends Component {
 
     componentDidMount() {
         const {dispatch} = this.props;
-        dispatch(fetchMovies());
+        dispatch(fetchMovies(""));
     }
 
     handleSelect(selectedIndex, e) {

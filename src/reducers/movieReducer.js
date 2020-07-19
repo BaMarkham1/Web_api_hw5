@@ -50,6 +50,10 @@ export default (state = initialState, action) => {
             console.log("updated");
             console.log(updated);
             return updated;
+        case constants.FETCH_ACTOR:
+            console.log("in fetch actor reducer");
+            updated["selectedActor"] = action.selectedActor;
+            return updated;
         default:
             return state;
     }

@@ -1,5 +1,6 @@
 import React, {Component} from "react";
 import {Image} from "react-bootstrap";
+import {LinkContainer} from "react-router-bootstrap";
 
 class MovieRoleScroller extends Component {
     constructor(props) {
@@ -14,10 +15,15 @@ class MovieRoleScroller extends Component {
                 <div class="RoleScroll">
                     {this.props.movieRoles.map( (role, index) =>
                         <div class="RoleScrollItem">
-                            <Image
-                                className="image"
-                                src={role.img_url}
-                            />
+                            <LinkContainer
+                                to={'/actors/'+role.actor_id}
+                                onClick={()=>this.props.handleClick(role)}
+                                >
+                                <Image
+                                    className="image"
+                                    src={role.img_url}
+                                />
+                            </LinkContainer>
                             <p>
                                 <b>
                                     {role.actor_name}
