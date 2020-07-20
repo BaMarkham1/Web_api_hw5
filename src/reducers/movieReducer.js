@@ -44,6 +44,11 @@ export default (state = initialState, action) => {
             console.log("updated:");
             console.log(updated);
             return updated;
+        case constants.FETCH_ACTOR_ROLES:
+            updated['actorRoles'] = action.actorRoles;
+            console.log("updated actor roles:");
+            console.log(updated);
+            return updated;
         case constants.FETCH_ACTORS:
             console.log("in fetch actors");
             updated['actors'] = action.actors;

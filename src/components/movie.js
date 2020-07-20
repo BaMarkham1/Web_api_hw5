@@ -426,7 +426,7 @@ class Movie extends Component {
         console.log("props:");
         console.log(this.props);
         const {dispatch} = this.props;
-        if (this.props.selectedMovie == null) {
+        if (this.props.selectedMovie == null || this.props.selectedMovie.genres == null ) {
             console.log("calling fetch movie");
             dispatch(fetchMovie(this.props.movieId));
         }
@@ -540,7 +540,7 @@ class Movie extends Component {
                         </b>
 
                     </h1>
-                    {this.props.selectedMovie.genres.join(", ") + " (" + this.props.selectedMovie.year + ")"}
+                    {this.props.selectedMovie.genres ? this.props.selectedMovie.genres.join(", ") + " (" + this.props.selectedMovie.year + ")" : "genres not found"}
                 </div>
             )
         };
@@ -612,7 +612,6 @@ class TrailerDisplay extends Component {
             return (
                 <ListGroupItem>
                     <Panel.Body >
-
                             <h3>
                                 <b>
                                     {"Watch trailer for " + this.props.selectedMovie.title}
