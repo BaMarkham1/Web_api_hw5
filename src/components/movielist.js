@@ -401,7 +401,7 @@ class MovieList extends Component {
         return dispatch => {
             console.log("actor to be posted:");
             console.log(newActor);
-            return fetch(`${env.REACT_APP_API_URL}/actor/`, {
+            return fetch(`${env.REACT_APP_API_URL}/actors/`, {
                 method: 'POST',
                 headers: {
                     'Accept': 'application/json',

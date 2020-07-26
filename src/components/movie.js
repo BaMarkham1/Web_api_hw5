@@ -19,7 +19,6 @@ import {
     fetchMovieRoles,
     postRole,
     putRole,
-    setMovie,
     setActor
 } from "../actions/movieActions";
 import ReactPlayer from "react-player"
@@ -324,7 +323,7 @@ class Movie extends Component {
             image_url: this.props.selectedMovie.image_url,
             trailer_url: this.props.selectedMovie.trailer_url,
             selectedGenres: selectedGenres
-        }
+        };
         this.setState({
             movieDetails: movieDetails
         })
@@ -386,7 +385,7 @@ class Movie extends Component {
         });
         const {dispatch} = this.props;
         this.state.editedRoles.forEach( (role) => {
-            dispatch(putRole(role));
+            dispatch(putRole(role, true));
         });
     }
 
@@ -418,7 +417,6 @@ class Movie extends Component {
         this.setState({
             movieDetails : updatedDetails
         }, () => dispatch(newPutMovie(this.state.movieDetails)));
-
     }
 
     componentDidMount() {

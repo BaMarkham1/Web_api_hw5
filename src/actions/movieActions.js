@@ -297,12 +297,12 @@ export function postNewReview(newReview){
     }
 }
 
-export function putRole(editedRole) {
+export function putRole(editedRole, onMoviePage) {
     console.log("edited role:");
     console.log(editedRole);
     const env = runtimeEnv();
     return dispatch => {
-        return fetch(`${env.REACT_APP_API_URL}/role/`, {
+        return fetch(`${env.REACT_APP_API_URL}/roles/`, {
             method: 'PUT',
             headers: {
                 'Accept': 'application/json',
@@ -321,7 +321,7 @@ export function putRole(editedRole) {
                 console.log(response);
                 if (response.status == 200) {
                     console.log("status was 200");
-                    dispatch(fetchMovieRoles(editedRole.movie_id));
+                    onMoviePage ? dispatch(fetchMovieRoles(editedRole.movie_id)) : dispatch(fetchActorRoles(editedRole.actor_id));
                 }
                 return response;
 
@@ -332,12 +332,12 @@ export function putRole(editedRole) {
     }
 }
 
-export function postRole(newRole, movieId){
+export function postRole(newRole, id, onMoviePage){
     console.log("role:");
     console.log(JSON.stringify(newRole));
     const env = runtimeEnv();
     return dispatch => {
-        return fetch(`${env.REACT_APP_API_URL}/role/`,{
+        return fetch(`${env.REACT_APP_API_URL}/roles/`,{
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
@@ -355,7 +355,7 @@ export function postRole(newRole, movieId){
                 console.log(response);
                 if (response.status == 200) {
                     console.log("status was 200");
-                    dispatch(fetchMovieRoles(movieId));
+                    onMoviePage ? dispatch(fetchMovieRoles(id)) : dispatch(fetchActorRoles(id));
                 }
                 return response;
 
@@ -395,5 +395,38 @@ export function newPutMovie(movieDetails){
             .catch( (e) => {
                 console.log(e)
         })
+    }
+}
+
+export function newPutActor(actorDetails){
+    console.log("Actor details in put actor");
+    console.log(actorDetails);
+    const env = runtimeEnv();
+    return dispatch => {
+        return fetch(`${env.REACT_APP_API_URL}/actors/`, {
+            method: 'PUT',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Authorization': localStorage.getItem('token')
+            },
+            body: JSON.stringify(actorDetails),
+            mode: 'cors'})
+            .then( (response) => {
+                console.log(response);
+                if (!response.ok) {
+                    throw Error(response.statusText);
+                }
+                console.log("response:")
+                console.log(response.json);
+                if (response.status == 200) {
+                    console.log("status was 200");
+                    dispatch(fetchActor(actorDetails._id));
+                }
+                return response.json;
+            })
+            .catch( (e) => {
+                console.log(e)
+            })
     }
 }
