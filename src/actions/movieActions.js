@@ -33,12 +33,13 @@ function actorFetched(actor) {
     }
 }
 
-function reviewsFetched(reviews) {
+function reviewsFetched(reviews, userReviewIndex) {
     console.log("in reviews fetched");
     console.log(reviews);
     return {
         type: actionTypes.FETCH_REVIEWS,
-        reviews: reviews
+        reviews: reviews,
+        userReviewIndex : userReviewIndex
     }
 }
 
@@ -206,7 +207,7 @@ export function fetchReviews(movieId){
                 return response.json();
             })
             .then( (res) => {
-                dispatch(reviewsFetched(res.reviews));
+                dispatch(reviewsFetched(res.reviews, res.userReviewIndex));
             })
             .catch( (e) => console.log(e) );
     }
@@ -269,6 +270,41 @@ export function postNewReview(newReview){
     return dispatch => {
         return fetch(`${env.REACT_APP_API_URL}/reviews/`, {
             method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Authorization': localStorage.getItem('token')
+            },
+            body: JSON.stringify(newReview),
+            mode: 'cors'})
+            .then( (response) => {
+                console.log(response);
+                if (!response.ok) {
+                    throw Error(response.statusText);
+                }
+                console.log("response:");
+                console.log(response.json);
+                if (response.status == 200) {
+                    console.log("status was 200");
+                    console.log(newReview);
+                    dispatch(fetchReviews(newReview.movie_id));
+                    dispatch(fetchMovie(newReview.movie_id));
+                }
+                return response.json;
+            })
+            .catch( (e) => {
+                console.log(e)
+            })
+    }
+}
+
+export function putNewReview(newReview){
+    console.log("review:");
+    console.log(JSON.stringify(newReview));
+    const env = runtimeEnv();
+    return dispatch => {
+        return fetch(`${env.REACT_APP_API_URL}/reviews/`, {
+            method: 'PUT',
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',

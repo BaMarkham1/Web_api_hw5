@@ -16,12 +16,14 @@ import {
     fetchMovies,
     putRole,
     postRole,
-    newPutActor
+    newPutActor,
+    fetchActors
 } from "../actions/movieActions";
 import ActorRoleScroller from "./ActorRoleScroller";
 import EditActorRolesForm from "./editActorRolesForm";
 import ActorEditForm from "./actorEditForm";
 import AddActorRolesForm from "./addActorRolesForm";
+import ActorJumper from "./actorJumper";
 
 const userStates = {
     NO_STATE : "no_state",
@@ -53,6 +55,7 @@ class Actor extends Component {
         this.deleteRole = this.deleteRole.bind(this);
         this.updateDetails = this.updateDetails.bind(this);
         this.putActor = this.putActor.bind(this);
+        this.goToActor = this.goToActor.bind(this);
     }
 
     deleteRole() {
@@ -93,6 +96,7 @@ class Actor extends Component {
         }
         dispatch(fetchActorRoles(this.props.actorId));
         dispatch(fetchMovies(""));
+        dispatch(fetchActors());
     }
 
     buttonHandler(button) {
@@ -352,6 +356,19 @@ class Actor extends Component {
         });
     }
 
+    goToActor(event) {
+        console.log("in go to actor:");
+        console.log("event:");
+        console.log(event);
+        console.log("event target:");
+        console.log(event.target);
+        console.log("event target value");
+        console.log(event.target.value);
+        console.log("event target id");
+        console.log(event.target.id);
+        this.props.history.push(`/actors/${event.target.value}`);
+    }
+
     render() {
         console.log("props in render");
         console.log(this.props);
@@ -374,6 +391,13 @@ class Actor extends Component {
                         className="image"
                         src={this.props.selectedActor ? this.props.selectedActor.img_url : this.state.empty_photo}
                         thumbnail
+                    />
+                </Panel.Body>
+                <Panel.Body>
+                    <ActorJumper
+                        currentActorId={this.props.actorId}
+                        actors={this.props.actors}
+                        //goToActor={this.goToActor}
                     />
                 </Panel.Body>
                 <Panel.Body>
@@ -421,7 +445,8 @@ const mapStateToProps = (state, ownProps) => {
         selectedActor: state.movie.selectedActor,
         actorId: ownProps.match.params.actorId,
         actorRoles: state.movie.actorRoles,
-        movies: state.movie.movies
+        movies: state.movie.movies,
+        actors: state.movie.actors
     }
 };
 

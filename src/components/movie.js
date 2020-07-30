@@ -19,7 +19,8 @@ import {
     fetchMovieRoles,
     postRole,
     putRole,
-    setActor
+    setActor,
+    putNewReview
 } from "../actions/movieActions";
 import ReactPlayer from "react-player"
 //internal components
@@ -35,6 +36,8 @@ const userStates = {
     NO_STATE : "no_state",
     SEE_REVIEWS : "see_reviews",
     POST_REVIEW : "post_review",
+    REVIEW_POSTED : "review_posted",
+    EDIT_REVIEW : "edit_review",
     EDIT_MOVIE : "edit_movie",
     ADD_ROLES : "add_roles",
     EDIT_ROLES : "edit_roles"
@@ -92,6 +95,7 @@ class Movie extends Component {
         this.submitEditedRoles = this.submitEditedRoles.bind(this);
         this.changeGenres = this.changeGenres.bind(this);
         this.handleActorClick = this.handleActorClick.bind(this);
+        this.putReview = this.putReview.bind(this);
     }
 
     handleActorClick(role) {
@@ -118,8 +122,26 @@ class Movie extends Component {
                 break;
             case 'post_review':
                 console.log("post a review");
+                if (this.props.userReviewedIndex === -1) {
+                    this.setState({
+                        userState: userStates.POST_REVIEW
+                    });
+                }
+                else {
+                    let userReview = this.props.reviews[this.props.userReviewIndex];
+                    let currentReview = this.state.review;
+                    currentReview.quote = userReview.quote;
+                    currentReview.rating = userReview.rating;
+                    currentReview._id = userReview._id;
+                    this.setState({
+                        review: currentReview,
+                        userState: userStates.REVIEW_POSTED
+                    });
+                }
+                break;
+            case 'edit_review':
                 this.setState({
-                    userState: userStates.POST_REVIEW
+                   userState: userStates.EDIT_REVIEW
                 });
                 break;
             case 'edit_movie':
@@ -131,7 +153,7 @@ class Movie extends Component {
                 break;
             case 'add_roles':
                 console.log("add roles");
-                if (this.state.newRoles.length == 0) {
+                if (this.state.newRoles.length === 0) {
                     this.addNewRole();
                 }
                 this.setState({
@@ -200,52 +222,90 @@ class Movie extends Component {
                         buttonHandler={this.buttonHandler}
                     />
                 );
-            case 'edit_movie':
+            case 'edit_review':
                 return (
-                        <MovieEditForm
-                            movie={this.state.movieDetails}
-                            updateDetails={this.updateDetails}
-                            putMovie={this.putMovie}
-                            buttonHandler={this.buttonHandler}
-                            changeGenres={this.changeGenres}
-                        />
+                    <SubmitReviewForm
+                        movie={this.props.selectedMovie}
+                        review={this.state.review}
+                        updateReview={this.updateReview}
+                        changeRating={this.changeRating}
+                        postReview={this.putReview}
+                        putMovie={this.putMovie}
+                        buttonHandler={this.buttonHandler}
+                    />
                 );
-            case 'add_roles':
-                if (this.state.newRoles && this.props.actors) {
-                    return (
-                        <AddMovieRolesForm rolesArray={this.state.newRoles} updateNewRoles={this.updateNewRoles}
-                                  actors={this.props.actors} addNewRole={this.addNewRole}
-                                  updateSelectedActor={this.updateSelectedActor}
-                                  selectValues={this.state.selectValues} submitNewRoles={this.submitNewRoles}
-                                  deleteRole={this.deleteRole}/>
-                    )
-                }
-                else {
-                    return (
-                        <p>...loading</p>
-                    )
-                }
-            case 'edit_roles':
-                console.log("edit roles");
-                console.log("edited roles:");
-                console.log(this.state.editedRoles);
+            case 'review_posted':
+                let userReview = this.props.reviews[this.props.userReviewIndex];
                 return (
-                  <EditMovieRolesForm
-                      editedRoles={this.state.editedRoles}
-                      actors={this.props.actors}
-                      updateEditedRoles={this.updateEditedRoles}
-                      submitEditedRoles ={this.submitEditedRoles}
-                      updateSelectedActor2 ={this.updateSelectedActor2}
-                  />
+                    <div>
+                        <h3>You have already posted a review for this movie.</h3>
+                        <p>
+                            <h4><b>{userReview.name}</b></h4>
+                            <StarRatings
+                                rating={userReview.rating}
+                                starDimension="20px"
+                                starSpacing="0px"
+                                starRatedColor="blue"
+                            />
+                        </p>
+                        <p key={userReview.quote}>
+                            {"\""+ userReview.quote +  "\""}
+                        </p>
+                        <button
+                            id="edit_review"
+                            className="btn btn-primary btn-sm"
+                            onClick={this.buttonHandler}
+                        >
+                            Edit Review
+                        </button>
+                    </div>
                 );
-            case 'no_state':
-                console.log("no state selected");
-                break;
-            default:
-                console.log("no cases met");
-                this.setState({
-                    userState: userStates.NO_STATE
-                });
+                case 'edit_movie':
+                    return (
+                            <MovieEditForm
+                                movie={this.state.movieDetails}
+                                updateDetails={this.updateDetails}
+                                putMovie={this.putMovie}
+                                buttonHandler={this.buttonHandler}
+                                changeGenres={this.changeGenres}
+                            />
+                    );
+                case 'add_roles':
+                    if (this.state.newRoles && this.props.actors) {
+                        return (
+                            <AddMovieRolesForm rolesArray={this.state.newRoles} updateNewRoles={this.updateNewRoles}
+                                      actors={this.props.actors} addNewRole={this.addNewRole}
+                                      updateSelectedActor={this.updateSelectedActor}
+                                      selectValues={this.state.selectValues} submitNewRoles={this.submitNewRoles}
+                                      deleteRole={this.deleteRole}/>
+                        )
+                    }
+                    else {
+                        return (
+                            <p>...loading</p>
+                        )
+                    }
+                case 'edit_roles':
+                    console.log("edit roles");
+                    console.log("edited roles:");
+                    console.log(this.state.editedRoles);
+                    return (
+                      <EditMovieRolesForm
+                          editedRoles={this.state.editedRoles}
+                          actors={this.props.actors}
+                          updateEditedRoles={this.updateEditedRoles}
+                          submitEditedRoles ={this.submitEditedRoles}
+                          updateSelectedActor2 ={this.updateSelectedActor2}
+                      />
+                    );
+                case 'no_state':
+                    console.log("no state selected");
+                    break;
+                default:
+                    console.log("no cases met");
+                    this.setState({
+                        userState: userStates.NO_STATE
+                    });
                 break;
         }
     }
@@ -397,9 +457,21 @@ class Movie extends Component {
         const {dispatch} = this.props;
         this.state.review.movie_id = this.props.movieId;
         dispatch(postNewReview(this.state.review));
-        //this.forceUpdate();
         this.setState({
             userState : userStates.SEE_REVIEWS
+        });
+    }
+
+    putReview() {
+        console.log("props");
+        console.log(this.props);
+        console.log("state");
+        console.log(this.state);
+        const {dispatch} = this.props;
+        this.state.review.movie_id = this.props.movieId;
+        dispatch(putNewReview(this.state.review));
+        this.setState({
+            userState : userStates.REVIEW_POSTED
         });
     }
 
@@ -665,6 +737,7 @@ const mapStateToProps = (state, ownProps) => {
         selectedMovie: state.movie.selectedMovie,
         movieId: ownProps.match.params.movieId,
         reviews: state.movie.reviews,
+        userReviewIndex: state.movie.userReviewIndex,
         movieRoles: state.movie.movieRoles,
         actors: state.movie.actors
     }

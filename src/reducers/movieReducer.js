@@ -35,6 +35,7 @@ export default (state = initialState, action) => {
         case constants.FETCH_REVIEWS:
             console.log("in fetch review movie reducer:");
             updated['reviews'] = action.reviews;
+            updated['userReviewIndex'] = action.userReviewIndex;
             console.log("updated:");
             console.log(updated);
             return updated;
