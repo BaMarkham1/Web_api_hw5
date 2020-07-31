@@ -188,11 +188,11 @@ export function fetchActor(actorId){
     }
 }
 
-export function fetchReviews(movieId){
+export function fetchMovieReviews(movieId){
     const env = runtimeEnv();
     console.log("in fetch review");
     return dispatch => {
-        return fetch(`${env.REACT_APP_API_URL}/reviews/${movieId}`, {
+        return fetch(`${env.REACT_APP_API_URL}/reviews/movie/${movieId}`, {
             method: 'GET',
             headers: {
                 'Accept': 'application/json',
@@ -287,8 +287,39 @@ export function postNewReview(newReview){
                 if (response.status == 200) {
                     console.log("status was 200");
                     console.log(newReview);
-                    dispatch(fetchReviews(newReview.movie_id));
+                    dispatch(fetchMovieReviews(newReview.movie_id));
                     dispatch(fetchMovie(newReview.movie_id));
+                }
+                return response.json;
+            })
+            .catch( (e) => {
+                console.log(e)
+            })
+    }
+}
+
+export function newDeleteReview(reviewId, movieId){
+    const env = runtimeEnv();
+    return dispatch => {
+        return fetch(`${env.REACT_APP_API_URL}/reviews/` + reviewId, {
+            method: 'DELETE',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Authorization': localStorage.getItem('token')
+            },
+            mode: 'cors'})
+            .then( (response) => {
+                console.log(response);
+                if (!response.ok) {
+                    throw Error(response.statusText);
+                }
+                console.log("response:");
+                console.log(response.json);
+                if (response.status == 200) {
+                    console.log("status was 200");
+                    dispatch(fetchMovieReviews(movieId));
+                    dispatch(fetchMovie(movieId));
                 }
                 return response.json;
             })
@@ -322,7 +353,7 @@ export function putNewReview(newReview){
                 if (response.status == 200) {
                     console.log("status was 200");
                     console.log(newReview);
-                    dispatch(fetchReviews(newReview.movie_id));
+                    dispatch(fetchMovieReviews(newReview.movie_id));
                     dispatch(fetchMovie(newReview.movie_id));
                 }
                 return response.json;

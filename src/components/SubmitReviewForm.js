@@ -1,5 +1,5 @@
 import React, {Component} from "react";
-import {Button, Form, FormGroup, ListGroup, Panel} from "react-bootstrap";
+import {Button, Form, FormGroup, ListGroup, Panel, ButtonGroup, ButtonToolbar} from "react-bootstrap";
 import StarRatings from "react-star-ratings";
 
 class SubmitReviewForm extends Component {
@@ -22,9 +22,7 @@ class SubmitReviewForm extends Component {
                     <Panel.Body>
                         <Form horizontal>
                             <h3>
-                                <b>
                                     Submit a Review for {this.props.movie.title}
-                                </b>
                             </h3>
                             <FormGroup controlId="rating">
                                 <StarRatings
@@ -40,10 +38,20 @@ class SubmitReviewForm extends Component {
                                     />
                             </FormGroup>
                             <FormGroup>
-                                <Button onClick={this.props.postReview}> Submit Review </Button>
+                                <button
+                                    onClick={this.props.postReview}
+                                    className ="btn btn-primary btn-sm"
+                                >
+                                    Submit Review
+                                </button>
                             </FormGroup>
                             <FormGroup>
-                                <Button onClick={this.props.buttonHandler}> Hide </Button>
+                                <button
+                                    onClick={this.props.buttonHandler}
+                                    className="btn btn-primary btn-sm"
+                                >
+                                    Hide
+                                </button>
                             </FormGroup>
                         </Form>
                     </Panel.Body>

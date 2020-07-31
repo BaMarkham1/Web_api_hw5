@@ -6,13 +6,13 @@ import {
     ListGroup,
     ListGroupItem,
     ButtonGroup,
-    ButtonToolbar,
+    ButtonToolbar, FormGroup,
 } from 'react-bootstrap'
 import { Image } from 'react-bootstrap'
 import { withRouter } from "react-router-dom";
 import {
     fetchMovie,
-    fetchReviews,
+    fetchMovieReviews,
     fetchActors,
     postNewReview,
     newPutMovie,
@@ -20,7 +20,8 @@ import {
     postRole,
     putRole,
     setActor,
-    putNewReview
+    putNewReview,
+    newDeleteReview
 } from "../actions/movieActions";
 import ReactPlayer from "react-player"
 //internal components
@@ -122,7 +123,9 @@ class Movie extends Component {
                 break;
             case 'post_review':
                 console.log("post a review");
-                if (this.props.userReviewedIndex === -1) {
+                console.log("props:");
+                console.log(this.props);
+                if (this.props.userReviewIndex === -1) {
                     this.setState({
                         userState: userStates.POST_REVIEW
                     });
@@ -142,6 +145,13 @@ class Movie extends Component {
             case 'edit_review':
                 this.setState({
                    userState: userStates.EDIT_REVIEW
+                });
+                break;
+            case 'delete_review':
+                //call a function that deletes the review here
+                this.deleteReview();
+                this.setState({
+                    userState: userStates.POST_REVIEW
                 });
                 break;
             case 'edit_movie':
@@ -235,31 +245,48 @@ class Movie extends Component {
                     />
                 );
             case 'review_posted':
-                let userReview = this.props.reviews[this.props.userReviewIndex];
-                return (
-                    <div>
-                        <h3>You have already posted a review for this movie.</h3>
-                        <p>
-                            <h4><b>{userReview.name}</b></h4>
-                            <StarRatings
-                                rating={userReview.rating}
-                                starDimension="20px"
-                                starSpacing="0px"
-                                starRatedColor="blue"
-                            />
-                        </p>
-                        <p key={userReview.quote}>
-                            {"\""+ userReview.quote +  "\""}
-                        </p>
-                        <button
-                            id="edit_review"
-                            className="btn btn-primary btn-sm"
-                            onClick={this.buttonHandler}
-                        >
-                            Edit Review
-                        </button>
-                    </div>
-                );
+                if (this.props.userReviewIndex !== -1){
+                    let userReview = this.props.reviews[this.props.userReviewIndex];
+                    return (
+                        <div>
+                            <h3>You have posted a review for this movie</h3>
+                            <p>
+                                <StarRatings
+                                    rating={userReview.rating}
+                                    starSpacing="0px"
+                                    starRatedColor="blue"
+                                />
+                            </p>
+                            <p key={userReview.quote}>
+                                {"\""+ userReview.quote +  "\""}
+                            </p>
+                            <ButtonToolbar>
+                                <ButtonGroup>
+                                    <button
+                                        id="edit_review"
+                                        className="btn btn-primary btn-sm"
+                                        onClick={this.buttonHandler}
+                                    >
+                                        Edit Review
+                                    </button>
+                                    <button
+                                        id="delete_review"
+                                        className="btn btn-primary btn-sm"
+                                        onClick={this.buttonHandler}
+                                    >
+                                        Delete Review
+                                    </button>
+                                </ButtonGroup>
+                            </ButtonToolbar>
+
+                        </div>
+                    );
+                }
+                else {
+                    return (
+                        <h3>You have posted a review for this movie</h3>
+                    );
+                }
                 case 'edit_movie':
                     return (
                             <MovieEditForm
@@ -310,6 +337,17 @@ class Movie extends Component {
         }
     }
 
+    deleteReview(){
+        let newReview = this.state.review;
+        newReview.quote = "";
+        newReview.rating = 0;
+        this.setState({
+           review : newReview
+        });
+        const {dispatch} = this.props;
+        dispatch(newDeleteReview(this.props.reviews[this.props.userReviewIndex]._id, this.props.selectedMovie._id));
+
+    };
 
     deleteRole() {
         let updatedRoles = this.state.newRoles;
@@ -458,7 +496,7 @@ class Movie extends Component {
         this.state.review.movie_id = this.props.movieId;
         dispatch(postNewReview(this.state.review));
         this.setState({
-            userState : userStates.SEE_REVIEWS
+            userState : userStates.REVIEW_POSTED
         });
     }
 
@@ -501,7 +539,7 @@ class Movie extends Component {
             dispatch(fetchMovie(this.props.movieId));
         }
         console.log("calling fetch review");
-        dispatch(fetchReviews(this.props.movieId));
+        dispatch(fetchMovieReviews(this.props.movieId));
         console.log("calling fetch movie roles");
         dispatch(fetchMovieRoles(this.props.movieId));
         console.log("calling fetch actors");
