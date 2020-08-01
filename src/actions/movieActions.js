@@ -52,6 +52,17 @@ function movieRolesFetched(movieRoles) {
     }
 }
 
+function watchlistFetched(watchlistCount, onUsersWatchlist) {
+    console.log("in watchlistFetched");
+    console.log(watchlistCount);
+    console.log(onUsersWatchlist);
+    return {
+        type: actionTypes.FETCH_WATCHLIST,
+        watchlistCount: watchlistCount,
+        onUsersWatchlist: onUsersWatchlist
+    }
+}
+
 function actorRolesFetched(actorRoles) {
     console.log("in actorRolesFetched");
     console.log(actorRoles);
@@ -238,6 +249,31 @@ export function fetchMovieRoles(movieId){
     }
 }
 
+export function fetchMovieWatchlist(movieId){
+    const env = runtimeEnv();
+    console.log("in fetch watchlist");
+    return dispatch => {
+        return fetch(`${env.REACT_APP_API_URL}/watchlist/movie/${movieId}`, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Authorization': localStorage.getItem('token')
+            },
+            mode: 'cors'})
+            .then( (response) => {
+                if (!response.ok) {
+                    throw Error(response.statusText);
+                }
+                return response.json();
+            })
+            .then( (res) => {
+                dispatch(watchlistFetched(res.watchlistCount, res.onUsersWatchlist));
+            })
+            .catch( (e) => console.log(e) );
+    }
+}
+
 export function fetchActorRoles(actorId){
     const env = runtimeEnv();
     console.log("in fetch actor roles");
@@ -289,6 +325,70 @@ export function postNewReview(newReview){
                     console.log(newReview);
                     dispatch(fetchMovieReviews(newReview.movie_id));
                     dispatch(fetchMovie(newReview.movie_id));
+                }
+                return response.json;
+            })
+            .catch( (e) => {
+                console.log(e)
+            })
+    }
+}
+
+export function postWatchlist(movieId){
+    console.log("movieId:");
+    console.log(movieId);
+    const env = runtimeEnv();
+    return dispatch => {
+        return fetch(`${env.REACT_APP_API_URL}/watchlist/movie/` + movieId, {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Authorization': localStorage.getItem('token')
+            },
+            mode: 'cors'})
+            .then( (response) => {
+                console.log(response);
+                if (!response.ok) {
+                    throw Error(response.statusText);
+                }
+                console.log("response:");
+                console.log(response.json);
+                if (response.status == 200) {
+                    console.log("status was 200");
+                    dispatch(fetchMovieWatchlist(movieId));
+                }
+                return response.json;
+            })
+            .catch( (e) => {
+                console.log(e)
+            })
+    }
+}
+
+export function deleteWatchlist(movieId){
+    console.log("movieId:");
+    console.log(movieId);
+    const env = runtimeEnv();
+    return dispatch => {
+        return fetch(`${env.REACT_APP_API_URL}/watchlist/movie/` + movieId, {
+            method: 'DELETE',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Authorization': localStorage.getItem('token')
+            },
+            mode: 'cors'})
+            .then( (response) => {
+                console.log(response);
+                if (!response.ok) {
+                    throw Error(response.statusText);
+                }
+                console.log("response:");
+                console.log(response.json);
+                if (response.status === 200) {
+                    console.log("status was 200");
+                    dispatch(fetchMovieWatchlist(movieId));
                 }
                 return response.json;
             })

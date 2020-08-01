@@ -21,7 +21,10 @@ import {
     putRole,
     setActor,
     putNewReview,
-    newDeleteReview
+    newDeleteReview,
+    fetchMovieWatchlist,
+    postWatchlist,
+    deleteWatchlist
 } from "../actions/movieActions";
 import ReactPlayer from "react-player"
 //internal components
@@ -97,6 +100,7 @@ class Movie extends Component {
         this.changeGenres = this.changeGenres.bind(this);
         this.handleActorClick = this.handleActorClick.bind(this);
         this.putReview = this.putReview.bind(this);
+        this.toggleWatchlist = this.toggleWatchlist.bind(this);
     }
 
     handleActorClick(role) {
@@ -544,6 +548,9 @@ class Movie extends Component {
         dispatch(fetchMovieRoles(this.props.movieId));
         console.log("calling fetch actors");
         dispatch(fetchActors());
+        console.log("calling fetch watchlist");
+        dispatch(fetchMovieWatchlist(this.props.movieId));
+
     }
 
     updateNewRoles(event) {
@@ -637,6 +644,17 @@ class Movie extends Component {
         console.log(this.state.movieDetails);
     }
 
+    toggleWatchlist(){
+        console.log("toggle watchlist called");
+        const {dispatch} = this.props;
+        if (this.props.onUsersWatchlist === true) {
+            dispatch(deleteWatchlist(this.props.movieId));
+        }
+        else{
+            dispatch(postWatchlist(this.props.movieId));
+        }
+    }
+
     render() {
 
         const MovieHeading = () => {
@@ -665,6 +683,35 @@ class Movie extends Component {
                         thumbnail
                     />
                 </Panel.Body>
+                <Panel.Body>
+                    {
+                        typeof this.props.onUsersWatchlist !== "undefined" ?
+                            <button
+                                id="watchlist"
+                                className="btn btn-primary btn-sm"
+                                onClick={this.toggleWatchlist}
+                            >
+                                {
+                                    this.props.onUsersWatchlist === true ?
+                                        "Remove from watchlist"
+                                        :
+                                        "Add to Watchlist"
+                                }
+                            </button>
+                            :
+                            <p></p>
+                    }
+                    <p>
+                        <i>
+                            {
+                                this.props.watchlistCount || this.props.watchlistCount === 0 ?
+                                    "on " + this.props.watchlistCount + " users' watchlists"
+                                    :
+                                    ""
+                            }
+                        </i>
+                    </p>
+                </Panel.Body>
                 <ListGroup>
                     <ListGroupItem>
                         <StarRatings
@@ -672,13 +719,15 @@ class Movie extends Component {
                             starRatedColor="blue"
                         />
                         <p>
-                            {
-                                this.props.reviews && this.props.reviews.length > 0 && this.props.selectedMovie?
-                                    "Community Rating: " + this.props.selectedMovie.avg_rating
-                                    :
-                                    "Be the first to post a review for this movie!"
+                            <i>
+                                {
+                                    this.props.reviews && this.props.reviews.length > 0 && this.props.selectedMovie?
+                                        "Community Rating: " + this.props.selectedMovie.avg_rating + " stars from " + this.props.reviews.length + " users"
+                                        :
+                                        "Be the first to post a review for this movie!"
 
-                            }
+                                }
+                            </i>
                         </p>
                     </ListGroupItem>
                     <ListGroupItem>
@@ -777,7 +826,9 @@ const mapStateToProps = (state, ownProps) => {
         reviews: state.movie.reviews,
         userReviewIndex: state.movie.userReviewIndex,
         movieRoles: state.movie.movieRoles,
-        actors: state.movie.actors
+        actors: state.movie.actors,
+        watchlistCount: state.movie.watchlistCount,
+        onUsersWatchlist: state.movie.onUsersWatchlist
     }
 };
 

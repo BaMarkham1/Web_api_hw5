@@ -60,6 +60,11 @@ export default (state = initialState, action) => {
             console.log("in fetch actor reducer");
             updated["selectedActor"] = action.selectedActor;
             return updated;
+        case constants.FETCH_WATCHLIST:
+            console.log("in fetch watchlist reducer");
+            updated["watchlistCount"] = action.watchlistCount;
+            updated["onUsersWatchlist"] = action.onUsersWatchlist;
+            return updated;
         default:
             return state;
     }
