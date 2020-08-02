@@ -6,7 +6,7 @@ import {
     ListGroup,
     ListGroupItem,
     ButtonGroup,
-    ButtonToolbar, FormGroup,
+    ButtonToolbar, FormGroup, Col
 } from 'react-bootstrap'
 import { Image } from 'react-bootstrap'
 import { withRouter } from "react-router-dom";
@@ -748,8 +748,8 @@ class Movie extends Component {
                             <button id="edit_roles" class="btn btn-primary btn-sm" onClick={this.buttonHandler}>Edit Roles</button>
                         </ButtonGroup>
                     </ButtonToolbar>
-                </Panel.Body>
                     {this.buttonSwitch()}
+                </Panel.Body>
             </Panel>
         )
     }
@@ -795,19 +795,29 @@ class TrailerDisplay extends Component {
 const ReviewInfo = ({reviews}) => {
     return (
         reviews.map((review, i) =>
-            <div>
-                <p>
-                    <h4><b>{review.name}</b></h4>
-                    <StarRatings
-                        rating={review.rating}
-                        starDimension="20px"
-                        starSpacing="0px"
-                        starRatedColor="blue"
+            <div className="review-list">
+                <Col sm={3}>
+                    <Image
+                        className="reviewPic"
+                        src={review.profile_pic}
+                        thumbnail
                     />
-                </p>
-                <p key={review.quote}>
-                    {"\""+ review.quote +  "\""}
-                </p>
+                </Col>
+                <Col sm={9} className="review-info">
+                    <p>
+                        <h4><b>{review.name}</b></h4>
+                        <StarRatings
+                            rating={review.rating}
+                            starDimension="20px"
+                            starSpacing="0px"
+                            starRatedColor="blue"
+                        />
+                    </p>
+                    <p key={review.quote}>
+                        {"\""+ review.quote +  "\""}
+                    </p>
+                </Col>
+
                 <br></br>
             </div>
         )

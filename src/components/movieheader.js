@@ -4,6 +4,7 @@ import {LinkContainer} from 'react-router-bootstrap';
 import {connect} from "react-redux";
 import { withRouter } from "react-router-dom";
 import {logoutUser} from "../actions/authActions";
+import {setUser} from "../actions/movieActions";
 
 class MovieHeader extends Component {
 
@@ -11,13 +12,15 @@ class MovieHeader extends Component {
         this.props.dispatch(logoutUser());
     }
 
+
+
     render() {
         return (
             <div>
                 <Navbar>
                     <Navbar.Header>
                         <Navbar.Brand>
-                            Movie Wiki
+                            WikiFlix
                         </Navbar.Brand>
                     </Navbar.Header>
                     <Nav>
@@ -32,6 +35,9 @@ class MovieHeader extends Component {
                         </LinkContainer>
                         <LinkContainer to={'/actorlist'}>
                             <NavItem eventKey={4} disabled={!this.props.loggedIn}>Actor List</NavItem>
+                        </LinkContainer>
+                        <LinkContainer to={'/user/' + this.props.username}>
+                            <NavItem onClick={() => this.props.dispatch(setUser(this.props.username))} eventKey={4} disabled={!this.props.loggedIn}>Profile</NavItem>
                         </LinkContainer>
                     </Nav>
                 </Navbar>

@@ -65,6 +65,10 @@ export default (state = initialState, action) => {
             updated["watchlistCount"] = action.watchlistCount;
             updated["onUsersWatchlist"] = action.onUsersWatchlist;
             return updated;
+        case constants.SET_USER:
+            console.log("in set user");
+            updated["user"] = action.user;
+            return updated;
         default:
             return state;
     }

@@ -52,12 +52,26 @@
 .form-horizontal {
   width: 40% !important;
   margin-left: 30%;
-  /*
-  border-style: solid;
-  border-width: 2px;
-  border-radius: 15px;
-  padding: 30px;
-   */
+}
+
+.reviewPic {
+  height: 100px;
+}
+
+.review-info {
+  text-align: left;
+}
+
+.review-list {
+  width: 40% !important;
+  margin-left: 30%;
+  display: flex;
+  height:100%;
+  border-style: groove;
+  border-width: 1px;
+  margin-top: 3px;
+  border-color: rgb(0, 0, 120);
+  border-radius: 5px;
 }
 
 .form-horizontal.control-label {

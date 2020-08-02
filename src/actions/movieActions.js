@@ -36,6 +36,7 @@ function actorFetched(actor) {
 function reviewsFetched(reviews, userReviewIndex) {
     console.log("in reviews fetched");
     console.log(reviews);
+    reviews.forEach( (review) => review.profile_pic = "https://as2.ftcdn.net/jpg/02/15/84/43/500_F_215844325_ttX9YiIIyeaR7Ne6EaLLjMAmy4GvPC69.jpg")
     return {
         type: actionTypes.FETCH_REVIEWS,
         reviews: reviews,
@@ -96,6 +97,20 @@ function actorSet(actor) {
 export function setActor(actor) {
     return dispatch => {
         dispatch(actorSet(actor))
+    }
+}
+
+function userSet(user) {
+    console.log("setting action type as set user");
+    return {
+        type: actionTypes.SET_USER,
+        user: user
+    }
+}
+
+export function setUser(actor) {
+    return dispatch => {
+        dispatch(userSet(actor))
     }
 }
 
