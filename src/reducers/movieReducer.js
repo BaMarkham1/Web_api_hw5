@@ -69,6 +69,31 @@ export default (state = initialState, action) => {
             console.log("in set user");
             updated["user"] = action.user;
             return updated;
+        case constants.FETCH_USER_REVIEWS:
+            console.log("in fetch user reviews reducer");
+            updated["userReviews"] = action.userReviews;
+            return updated;
+        case constants.FETCH_USER_WATCHLIST:
+            console.log("in fetch user watchlist reducer");
+            updated["userWatchlist"] = action.userWatchlist;
+            return updated;
+        case constants.FETCH_USER_PIC:
+            console.log("in fetch user pic reducer");
+            updated["userProfilePic"] = action.userProfilePic;
+            return updated;
+        case constants.FETCH_USER_MOVIE:
+            console.log("in fetch user movie reducer");
+            console.log("user movie:");
+            console.log(action.userMovie);
+            let field = "";
+            if (action.forWatchlist === true) field = "userWatchlist";
+            else field = "userReviews";
+            updated[field][action.index]["title"] = action.userMovie.title;
+            updated[field][action.index]["image_url"] = action.userMovie.image_url;
+            updated[field][action.index]["trailer_url"] = action.userMovie.trailer_url;
+            updated[field][action.index]["avg_rating"] = action.userMovie.avg_rating;
+            updated[field][action.index]["genres"] = action.userMovie.genres;
+            return updated;
         default:
             return state;
     }

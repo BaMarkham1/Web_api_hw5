@@ -314,6 +314,150 @@ export function fetchActorRoles(actorId){
     }
 }
 
+function userReviewsFetched(reviews) {
+    console.log("in userReviewsFetched");
+    console.log(reviews);
+    return {
+        type: actionTypes.FETCH_USER_REVIEWS,
+        userReviews: reviews
+    }
+}
+
+export function fetchUserReviews(username){
+    const env = runtimeEnv();
+    console.log("in fetch user reviews");
+    return dispatch => {
+        return fetch(`${env.REACT_APP_API_URL}/reviews/user/${username}`, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Authorization': localStorage.getItem('token')
+            },
+            mode: 'cors'})
+            .then( (response) => {
+                if (!response.ok) {
+                    throw Error(response.statusText);
+                }
+                return response.json();
+            })
+            .then( (res) => {
+                dispatch(userReviewsFetched(res.reviews));
+                res.reviews.forEach( (review, index) => {
+                    dispatch(fetchUserMovie(review.movie_id, index, false));
+                });
+            })
+            .catch( (e) => console.log(e) );
+    }
+}
+
+function userWatchlistFetched(watchlist) {
+    console.log("in userWatchlistFetched");
+    console.log(watchlist);
+    return {
+        type: actionTypes.FETCH_USER_WATCHLIST,
+        userWatchlist: watchlist
+    }
+}
+
+export function fetchUserWatchlist(username){
+    const env = runtimeEnv();
+    console.log("in fetch actor roles");
+    return dispatch => {
+        return fetch(`${env.REACT_APP_API_URL}/watchlist/user/${username}`, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Authorization': localStorage.getItem('token')
+            },
+            mode: 'cors'})
+            .then( (response) => {
+                if (!response.ok) {
+                    throw Error(response.statusText);
+                }
+                return response.json();
+            })
+            .then( (res) => {
+                dispatch(userWatchlistFetched(res.watchlist));
+                res.watchlist.forEach( (watchlistItem, index) => {
+                    dispatch(fetchUserMovie(watchlistItem.movie_id, index, true));
+                });
+            })
+            .catch( (e) => console.log(e) );
+    }
+}
+
+function userProfilePicFetched(profilePic) {
+    console.log("in userWatchlistFetched");
+    console.log(profilePic);
+    return {
+        type: actionTypes.FETCH_USER_PIC,
+        userProfilePic: profilePic
+    }
+}
+
+export function fetchUserProfilePic(username){
+    const env = runtimeEnv();
+    console.log("in fetch actor roles");
+    return dispatch => {
+        return fetch(`${env.REACT_APP_API_URL}/profilePic/user/${username}`, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Authorization': localStorage.getItem('token')
+            },
+            mode: 'cors'})
+            .then( (response) => {
+                if (!response.ok) {
+                    throw Error(response.statusText);
+                }
+                return response.json();
+            })
+            .then( (res) => {
+                dispatch(userProfilePicFetched(res.profilePic));
+            })
+            .catch( (e) => console.log(e) );
+    }
+}
+
+function userMovieFetched(movie, index, forWatchlist) {
+    console.log("in userMovieFetched");
+    console.log(movie);
+    return {
+        type: actionTypes.FETCH_USER_MOVIE,
+        userMovie: movie,
+        index : index,
+        forWatchlist : forWatchlist
+    }
+}
+
+export function fetchUserMovie(movieId, index, forWatchlist){
+    const env = runtimeEnv();
+    console.log("in fetch actor roles");
+    return dispatch => {
+        return fetch(`${env.REACT_APP_API_URL}/movies/${movieId}`, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Authorization': localStorage.getItem('token')
+            },
+            mode: 'cors'})
+            .then( (response) => {
+                if (!response.ok) {
+                    throw Error(response.statusText);
+                }
+                return response.json();
+            })
+            .then( (res) => {
+                dispatch(userMovieFetched(res.movie, index, forWatchlist));
+            })
+            .catch( (e) => console.log(e) );
+    }
+}
+
 export function postNewReview(newReview){
     console.log("review:");
     console.log(JSON.stringify(newReview));

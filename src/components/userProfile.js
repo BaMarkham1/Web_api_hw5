@@ -11,8 +11,13 @@ import {
 import { Image } from 'react-bootstrap'
 import { withRouter } from "react-router-dom";
 import {
-
+    fetchUserReviews, fetchUserWatchlist, fetchUserProfilePic
 } from "../actions/movieActions";
+import {fetchMovie} from "../actions/movieActions";
+import {fetchMovieReviews} from "../actions/movieActions";
+import {fetchMovieRoles} from "../actions/movieActions";
+import {fetchActors} from "../actions/movieActions";
+import {fetchMovieWatchlist} from "../actions/movieActions";
 
 class UserProfile extends Component {
 
@@ -21,6 +26,16 @@ class UserProfile extends Component {
         console.log("props in user profile:");
         console.log(this.props);
         const {dispatch} = this.props;
+    }
+
+    componentDidMount() {
+        console.log("UserProfile component did mount");
+        console.log("props:");
+        console.log(this.props);
+        const {dispatch} = this.props;
+        dispatch(fetchUserReviews(this.props.userPage));
+        dispatch(fetchUserWatchlist(this.props.userPage));
+        dispatch(fetchUserProfilePic(this.props.userPage));
     }
 
     render(){
@@ -42,7 +57,11 @@ const mapStateToProps = (state, ownProps) => {
     console.log(ownProps);
     return {
         userPage: ownProps.match.params.username,
-        currentUser: state.auth.username
+        currentUser: state.auth.username,
+        userReviews: state.movie.userReviews,
+        userWatchlist: state.movie.userWatchlist,
+        userProfilePic: state.movie.userProfilePic,
+        //userReviews[state.movie.userMovie[index]] : state.movie.userMovie
     }
 };
 
