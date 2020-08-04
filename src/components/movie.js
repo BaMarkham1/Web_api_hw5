@@ -223,6 +223,10 @@ class Movie extends Component {
                         </h3>
                         <ReviewList
                             reviews={this.props.reviews}
+                            itemHeader="name"
+                            imageField="profile_pic"
+                            linkRoute="/user/"
+                            linkParamField="name"
                         />
                     </div>
                 );

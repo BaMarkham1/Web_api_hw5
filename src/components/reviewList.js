@@ -13,21 +13,24 @@ export default class ReviewList extends Component {
     render() {
         return(
             this.props.reviews.map((review, i) =>
-                <div className="review-list">
+                <div
+                    className="review-list"
+                    key="userReviewList"
+                >
                     <Col sm={3}>
                         <LinkContainer
-                            to={'/user/'+review.name}
+                            to={this.props.linkRoute+review[this.props.linkParamField]}
                         >
                             <Image
                                 className="reviewPic"
-                                src={review.profile_pic}
+                                src={review[this.props.imageField]}
                                 thumbnail
                             />
                         </LinkContainer>
                     </Col>
                     <Col sm={9} className="review-info">
                         <p>
-                            <h4><b>{review.name}</b></h4>
+                            <h4><b>{review[this.props.itemHeader]}</b></h4>
                             <StarRatings
                                 rating={review.rating}
                                 starDimension="20px"

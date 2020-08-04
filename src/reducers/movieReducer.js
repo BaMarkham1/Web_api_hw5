@@ -3,7 +3,7 @@ import constants from '../constants/actionTypes'
 var initialState = {
     movies: [],
     selectedMovie: null
-}
+};
 
 export default (state = initialState, action) => {
     var updated = Object.assign({}, state);
@@ -88,11 +88,13 @@ export default (state = initialState, action) => {
             let field = "";
             if (action.forWatchlist === true) field = "userWatchlist";
             else field = "userReviews";
-            updated[field][action.index]["title"] = action.userMovie.title;
-            updated[field][action.index]["image_url"] = action.userMovie.image_url;
-            updated[field][action.index]["trailer_url"] = action.userMovie.trailer_url;
-            updated[field][action.index]["avg_rating"] = action.userMovie.avg_rating;
-            updated[field][action.index]["genres"] = action.userMovie.genres;
+            let updatedReview = Object.assign({}, state[field][action.index]);
+            updatedReview["title"] = action.userMovie.title;
+            updatedReview["image_url"] = action.userMovie.image_url;
+            updatedReview["trailer_url"] = action.userMovie.trailer_url;
+            updatedReview["avg_rating"] = action.userMovie.avg_rating;
+            updatedReview["genres"] = action.userMovie.genres;
+            updated[field][action.index] = updatedReview;
             return updated;
         case constants.FETCH_REVIEW_PIC:
             console.log("in fetch review pic reducer");

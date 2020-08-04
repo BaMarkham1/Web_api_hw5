@@ -345,6 +345,7 @@ export function fetchUserReviews(username){
             .then( (res) => {
                 dispatch(userReviewsFetched(res.reviews));
                 res.reviews.forEach( (review, index) => {
+                    if (review.movie_id == "5f0e73c62c69a600008e23d8") console.log(review)
                     dispatch(fetchUserMovie(review.movie_id, index, false));
                 });
             })

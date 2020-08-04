@@ -14,6 +14,7 @@ import {
     fetchUserReviews, fetchUserWatchlist, fetchUserProfilePic, newPutProfilePic
 } from "../actions/movieActions";
 import UpdateProfilePic from "./updateProfilePic"
+import ReviewList from "./reviewList";
 
 
 const userStates = {
@@ -92,7 +93,6 @@ class UserProfile extends Component {
                             :
                             <p></p>
                     }
-
                 </Panel.Body>
                 <Panel.Body>
                     <ButtonToolbar>
@@ -111,6 +111,31 @@ class UserProfile extends Component {
                             </button>
                         </ButtonGroup>
                     </ButtonToolbar>
+                </Panel.Body>
+                <Panel.Body>
+                    {
+                        this.props.userReviews ?
+                            this.props.userReviews[0].image_url ?
+                                <ReviewList
+                                    reviews={this.props.userReviews}
+                                    itemHeader="title"
+                                    imageField="image_url"
+                                    linkRoute="/movies/"
+                                    linkParamField="movie_id"
+                                />
+                                :
+                                console.log("second condition failed")
+                            :
+                            console.log("first condition failed")
+                    }
+                </Panel.Body>
+                <Panel.Body>
+                    {
+                        this.props.userReviews && this.props.userReviews[0].image_url ?
+                            <p>this.props.userReview[0].image_url</p>
+                            :
+                            <p>No image url yet</p>
+                    }
                 </Panel.Body>
                 <Panel.Body>
                     <button onClick={()=>console.log(this.props)}>Show props</button>
@@ -132,7 +157,7 @@ const mapStateToProps = (state, ownProps) => {
         currentUser: state.auth.username,
         userReviews: state.movie.userReviews,
         userWatchlist: state.movie.userWatchlist,
-        userProfilePic: state.movie.userProfilePic,
+        userProfilePic: state.movie.userProfilePic
         //userReviews[state.movie.userMovie[index]] : state.movie.userMovie
     }
 };
