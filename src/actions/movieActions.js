@@ -234,6 +234,7 @@ export function fetchMovieReviews(movieId){
             })
             .then( (res) => {
                 dispatch(reviewsFetched(res.reviews, res.userReviewIndex));
+                res.reviews.forEach((review, index) => dispatch(fetchReviewProfilePic(review.name, index)));
             })
             .catch( (e) => console.log(e) );
     }
@@ -458,6 +459,41 @@ export function fetchUserMovie(movieId, index, forWatchlist){
     }
 }
 
+function reviewProfilePicFetched(profilePic, index) {
+    console.log("in userMovieFetched");
+    console.log(profilePic);
+    return {
+        type: actionTypes.FETCH_REVIEW_PIC,
+        profile_pic: profilePic,
+        index : index
+    }
+}
+
+export function fetchReviewProfilePic(username, index){
+    const env = runtimeEnv();
+    console.log("in fetch actor roles");
+    return dispatch => {
+        return fetch(`${env.REACT_APP_API_URL}/profilePic/user/${username}`, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Authorization': localStorage.getItem('token')
+            },
+            mode: 'cors'})
+            .then( (response) => {
+                if (!response.ok) {
+                    throw Error(response.statusText);
+                }
+                return response.json();
+            })
+            .then( (res) => {
+                dispatch(reviewProfilePicFetched(res.profilePic, index));
+            })
+            .catch( (e) => console.log(e) );
+    }
+}
+
 export function postNewReview(newReview){
     console.log("review:");
     console.log(JSON.stringify(newReview));
@@ -614,6 +650,40 @@ export function putNewReview(newReview){
                     console.log(newReview);
                     dispatch(fetchMovieReviews(newReview.movie_id));
                     dispatch(fetchMovie(newReview.movie_id));
+                }
+                return response.json;
+            })
+            .catch( (e) => {
+                console.log(e)
+            })
+    }
+}
+
+export function newPutProfilePic(profile, username){
+    console.log("review:");
+    console.log(JSON.stringify(profile));
+    const env = runtimeEnv();
+    return dispatch => {
+        return fetch(`${env.REACT_APP_API_URL}/profilePic/`, {
+            method: 'PUT',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Authorization': localStorage.getItem('token')
+            },
+            body: JSON.stringify(profile),
+            mode: 'cors'})
+            .then( (response) => {
+                console.log(response);
+                if (!response.ok) {
+                    throw Error(response.statusText);
+                }
+                console.log("response:");
+                console.log(response.json);
+                if (response.status == 200) {
+                    console.log("status was 200");
+                    console.log(profile);
+                    dispatch(fetchUserProfilePic(username));
                 }
                 return response.json;
             })

@@ -9,6 +9,7 @@ import {
     ButtonToolbar, FormGroup, Col
 } from 'react-bootstrap'
 import { Image } from 'react-bootstrap'
+import {LinkContainer} from "react-router-bootstrap";
 import { withRouter } from "react-router-dom";
 import {
     fetchMovie,
@@ -33,6 +34,7 @@ import AddMovieRolesForm from "./AddMovieRolesForm";
 import EditMovieRolesForm from "./EditMovieRolesForm";
 import SubmitReviewForm from "./SubmitReviewForm";
 import MovieEditForm from "./MovieEditForm";
+import ReviewList from "./reviewList";
 
 //support routing by creating a new component
 
@@ -219,7 +221,7 @@ class Movie extends Component {
                                     <p>...loading reviews</p>}
                             </b>
                         </h3>
-                        <ReviewInfo
+                        <ReviewList
                             reviews={this.props.reviews}
                         />
                     </div>
@@ -741,7 +743,7 @@ class Movie extends Component {
                 <Panel.Body>
                     <ButtonToolbar>
                         <ButtonGroup>
-                            <button id="see_reviews" class="btn btn-primary btn-sm"onClick={this.buttonHandler}>See Reviews</button>
+                            <button id="see_reviews" class="btn btn-primary btn-sm" onClick={this.buttonHandler}>See Reviews</button>
                             <button id="post_review" class="btn btn-primary btn-sm" onClick={this.buttonHandler}>Post Review</button>
                             <button id="edit_movie" class="btn btn-primary btn-sm" onClick={this.buttonHandler}>Edit Movie Details</button>
                             <button id="add_roles" class="btn btn-primary btn-sm" onClick={this.buttonHandler}>Add Roles</button>
@@ -797,11 +799,16 @@ const ReviewInfo = ({reviews}) => {
         reviews.map((review, i) =>
             <div className="review-list">
                 <Col sm={3}>
-                    <Image
-                        className="reviewPic"
-                        src={review.profile_pic}
-                        thumbnail
-                    />
+                    <LinkContainer
+                        to={'/user/'+review.name}
+                    >
+                        <Image
+                            className="reviewPic"
+                            src={review.profile_pic}
+                            thumbnail
+                        />
+                    </LinkContainer>
+
                 </Col>
                 <Col sm={9} className="review-info">
                     <p>

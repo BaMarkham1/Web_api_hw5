@@ -6,18 +6,22 @@ import {
     ListGroup,
     ListGroupItem,
     ButtonGroup,
-    ButtonToolbar, FormGroup, Col
+    ButtonToolbar, FormGroup, Col, Row, ControlLabel, FormControl, Button, Form
 } from 'react-bootstrap'
 import { Image } from 'react-bootstrap'
 import { withRouter } from "react-router-dom";
 import {
-    fetchUserReviews, fetchUserWatchlist, fetchUserProfilePic
+    fetchUserReviews, fetchUserWatchlist, fetchUserProfilePic, newPutProfilePic
 } from "../actions/movieActions";
-import {fetchMovie} from "../actions/movieActions";
-import {fetchMovieReviews} from "../actions/movieActions";
-import {fetchMovieRoles} from "../actions/movieActions";
-import {fetchActors} from "../actions/movieActions";
-import {fetchMovieWatchlist} from "../actions/movieActions";
+import UpdateProfilePic from "./updateProfilePic"
+
+
+const userStates = {
+    NO_STATE : "no_state",
+    SEE_REVIEWS : "see_reviews",
+    SEE_WATCHLIST : "see_watchlist",
+    EDIT_REVIEW : "edit_review",
+};
 
 class UserProfile extends Component {
 
@@ -25,7 +29,15 @@ class UserProfile extends Component {
         super(props);
         console.log("props in user profile:");
         console.log(this.props);
-        const {dispatch} = this.props;
+        this.state = {
+            empty_photo : "https://www.thepeakid.com/wp-content/uploads/2016/03/default-profile-picture.jpg",
+            userState : userStates.NO_STATE,
+            changeProfilePic : false,
+            updatedProfilePic : ""
+        };
+        this.setProfilePic = this.setProfilePic.bind(this);
+        this.updateProfilePic = this.updateProfilePic.bind(this);
+        this.putProfilePic = this.putProfilePic.bind(this);
     }
 
     componentDidMount() {
@@ -38,13 +50,73 @@ class UserProfile extends Component {
         dispatch(fetchUserProfilePic(this.props.userPage));
     }
 
+    putProfilePic(){
+        const {dispatch} = this.props;
+        dispatch(newPutProfilePic({profilePic : this.state.updatedProfilePic}, this.props.currentUser));
+        this.setState({
+            changeProfilePic : false
+        })
+    }
+
+    updateProfilePic(event) {
+        this.setState({
+            updatedProfilePic: event.target.value
+        });
+    }
+
+    setProfilePic() {
+        this.setState({
+            changeProfilePic : !this.state.changeProfilePic
+        });
+    }
+
     render(){
         return (
-            <div>
-                <h1>{this.props.user ? this.props.user : "User profile"}</h1>
-                <button onClick={()=>console.log(this.props)}>Show props</button>
-                <button onClick={()=>console.log(this.state)}>Show state</button>
-            </div>
+            <Panel>
+                <Panel.Body>
+                    <h1>{this.props.userPage ? this.props.userPage : "User profile"}</h1>
+                    <Image
+                        className="image"
+                        src={this.props.userProfilePic ? this.props.userProfilePic : this.state.empty_photo}
+                        thumbnail
+                    />
+                    {
+                        this.props.userPage === this.props.currentUser?
+                            <UpdateProfilePic
+                                setProfilePic={this.setProfilePic}
+                                changeProfilePic={this.state.changeProfilePic}
+                                updatedProfilePic={this.state.updatedProfilePic}
+                                updateProfilePic={this.updateProfilePic}
+                                putProfilePic={this.putProfilePic}
+                            />
+                            :
+                            <p></p>
+                    }
+
+                </Panel.Body>
+                <Panel.Body>
+                    <ButtonToolbar>
+                        <ButtonGroup>
+                            <button
+                                id="see_reviews"
+                                className="btn btn-primary btn-sm"
+                            >
+                                Reviews
+                            </button>
+                            <button
+                                id="see_watchlist"
+                                className="btn btn-primary btn-sm"
+                            >
+                                Watchlist
+                            </button>
+                        </ButtonGroup>
+                    </ButtonToolbar>
+                </Panel.Body>
+                <Panel.Body>
+                    <button onClick={()=>console.log(this.props)}>Show props</button>
+                    <button onClick={()=>console.log(this.state)}>Show state</button>
+                </Panel.Body>
+            </Panel>
         )
     }
 }

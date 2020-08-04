@@ -94,6 +94,10 @@ export default (state = initialState, action) => {
             updated[field][action.index]["avg_rating"] = action.userMovie.avg_rating;
             updated[field][action.index]["genres"] = action.userMovie.genres;
             return updated;
+        case constants.FETCH_REVIEW_PIC:
+            console.log("in fetch review pic reducer");
+            updated["reviews"][action.index]["profile_pic"] = action.profile_pic
+            return updated;
         default:
             return state;
     }
